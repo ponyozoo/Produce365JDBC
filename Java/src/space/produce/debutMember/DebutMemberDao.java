@@ -19,6 +19,6 @@ public interface DebutMemberDao {
 	public List<DebutMember> selectAll();
 	
 	//4. 데뷔멤버 그룹별 조회
-	public List<DebutMember> selectByGroup();
+	public List<DebutMember> selectByGroup(int groupId);
 	
 }
