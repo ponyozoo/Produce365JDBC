@@ -12,7 +12,7 @@ public class Lesson {
 	private int id;
 	private String trainer;
 	private String subject;
-	private int time;
+	private float time;
 	
 	//2. set&get
 	public int getId() {
@@ -39,11 +39,11 @@ public class Lesson {
 		this.subject = subject;
 	}
 	
-	public int getTime() {
+	public float getTime() {
 		return time;
 	}
 	
-	public void setTime(int time) {
+	public void setTime(float time) {
 		this.time = time;
 	}
 	
@@ -51,7 +51,11 @@ public class Lesson {
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것)
 	public Lesson() {}
 	
-	public Lesson(int id, String trainer, String subject, int time) {
+	public Lesson(int id) {
+		this.id = id;
+	}
+	
+	public Lesson(int id, String trainer, String subject, float time) {
 		this.id = id;
 		this.trainer = trainer;
 		this.subject = subject;
@@ -64,8 +68,5 @@ public class Lesson {
 	public String toString() {
 		return "Lesson [id=" + id + ", trainer=" + trainer + ", subject=" + subject + ", time=" + time + "]";
 	}
-	
-	
-	
-	
+
 }
