@@ -8,7 +8,7 @@ public class Rating {
 	private Trainee trainee; // TRAINEE TABLE ->TRAINEE_ID NUMBER REFERENCES TRAINEE(ID)의미 , 나중에 객체를 불러와야 한다
 	private String grade;
 
-	Rating() {}
+	public Rating() {}
 
 	public Rating(String category, Trainee trainee, String grade) {
 		this.category = category;

@@ -2,6 +2,7 @@ package space.produce.careHistory;
 
 import java.sql.Date;
 
+import space.produce.care.Care;
 import space.produce.trainee.Trainee;
 
 public class CareHistory {
@@ -17,7 +18,7 @@ public class CareHistory {
 	//1. 컬럼 변수화.
 	private int idx;
 	private Date careDate;
-	private int careID;
+	private Care care;
 	private Trainee trainee;
 	
 	
@@ -25,37 +26,44 @@ public class CareHistory {
 	public int getIdx() {
 		return idx;
 	}
+	
 	public void setIdx(int idx) {
 		this.idx = idx;
 	}
+	
 	public Date getCareDate() {
 		return careDate;
 	}
+	
 	public void setCareDate(Date careDate) {
 		this.careDate = careDate;
 	}
-	public int getCareID() {
-		return careID;
+	
+	public Care getCare() {
+		return care;
 	}
-	public void setCareID(int careID) {
-		this.careID = careID;
+	
+	public void setCare(Care care) {
+		this.care = care;
 	}
+	
 	public Trainee getTrainee() {
 		return trainee;
 	}
+	
 	public void setTrainee(Trainee trainee) {
 		this.trainee = trainee;
 	}
 	
 	
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것) 
-	public CareHistory() {
-	}
-	public CareHistory(int idx, Date careDate, int careID, Trainee trainee) {
+	public CareHistory() {}
+	
+	public CareHistory(int idx, Date careDate, Care care, Trainee trainee) {
 		super();
 		this.idx = idx;
 		this.careDate = careDate;
-		this.careID = careID;
+		this.care = care;
 		this.trainee = trainee;
 	}
 	
@@ -63,7 +71,7 @@ public class CareHistory {
 	//4. toString 
 	@Override
 	public String toString() {
-		return "CareHistory [idx=" + idx + ", careDate=" + careDate + ", careID=" + careID + ", trainee=" + trainee
+		return "CareHistory [idx=" + idx + ", careDate=" + careDate + ", care=" + care + ", trainee=" + trainee
 				+ "]";
 	}
 	

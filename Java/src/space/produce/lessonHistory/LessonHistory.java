@@ -19,55 +19,60 @@ public class LessonHistory {
 	//1. 컬럼 변수화(private)
 	private int id;
 	private Date lessonDate;
-	private Lesson lessonId;
-	private Trainee traineeId;
+	private Lesson lesson;
+	private Trainee trainee;
 	
 	
 	//2. set&get 
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
+	
 	public Date getLessonDate() {
 		return lessonDate;
 	}
+	
 	public void setLessonDate(Date lessonDate) {
 		this.lessonDate = lessonDate;
 	}
+	
 	public Lesson getLessonId() {
-		return lessonId;
+		return lesson;
 	}
+	
 	public void setLessonId(Lesson lessonId) {
-		this.lessonId = lessonId;
+		this.lesson = lessonId;
 	}
+	
 	public Trainee getTraineeId() {
-		return traineeId;
+		return trainee;
 	}
+	
 	public void setTraineeId(Trainee traineeId) {
-		this.traineeId = traineeId;
+		this.trainee = traineeId;
 	}
 	
 	
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것) 
-	public LessonHistory() {
-		
-	}
+	public LessonHistory() {}
+	
 	public LessonHistory(int id, Date lessonDate, Lesson lessonId, Trainee traineeId) {
-		super();
 		this.id = id;
 		this.lessonDate = lessonDate;
-		this.lessonId = lessonId;
-		this.traineeId = traineeId;
+		this.lesson = lessonId;
+		this.trainee = traineeId;
 	}
 	
 	
 	//4. toString 
 	@Override
 	public String toString() {
-		return "LessonHistory [id=" + id + ", lessonDate=" + lessonDate + ", lessonId=" + lessonId + ", traineeId="
-				+ traineeId + "]";
+		return "LessonHistory [id=" + id + ", lessonDate=" + lessonDate + ", lessonId=" + lesson + ", traineeId="
+				+ trainee + "]";
 	}
 	 
 	

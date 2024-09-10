@@ -18,34 +18,40 @@ public class Lesson {
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
+	
 	public String getTrainer() {
 		return trainer;
 	}
+	
 	public void setTrainer(String trainer) {
 		this.trainer = trainer;
 	}
+	
 	public String getSubject() {
 		return subject;
 	}
+	
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
+	
 	public int getTime() {
 		return time;
 	}
+	
 	public void setTime(int time) {
 		this.time = time;
 	}
 	
 	
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것)
-	public Lesson() {
-	}
+	public Lesson() {}
+	
 	public Lesson(int id, String trainer, String subject, int time) {
-		super();
 		this.id = id;
 		this.trainer = trainer;
 		this.subject = subject;
