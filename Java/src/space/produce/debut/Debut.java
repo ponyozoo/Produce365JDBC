@@ -12,6 +12,11 @@ public class Debut {
 	
 	public Debut () {}
 	
+
+	public Debut(int id) {
+		this.id = id;
+	}
+
 	public Debut(int id, String name, int memberCount, String concept, String grade, Date debutDate) {
 		this.id = id;
 		this.name = name;
