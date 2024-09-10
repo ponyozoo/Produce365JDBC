@@ -40,38 +40,38 @@ public class LessonHistory {
 		this.lessonDate = lessonDate;
 	}
 	
-	public Lesson getLessonId() {
+	public Lesson getLesson() {
 		return lesson;
 	}
 	
-	public void setLessonId(Lesson lessonId) {
-		this.lesson = lessonId;
+	public void setLesson(Lesson lesson) {
+		this.lesson = lesson;
 	}
 	
-	public Trainee getTraineeId() {
+	public Trainee getTrainee() {
 		return trainee;
 	}
 	
-	public void setTraineeId(Trainee traineeId) {
-		this.trainee = traineeId;
+	public void setTrainee(Trainee trainee) {
+		this.trainee = trainee;
 	}
 	
 	
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것) 
 	public LessonHistory() {}
 	
-	public LessonHistory(int id, Date lessonDate, Lesson lessonId, Trainee traineeId) {
+	public LessonHistory(int id, Date lessonDate, Lesson lesson, Trainee trainee) {
 		this.id = id;
 		this.lessonDate = lessonDate;
-		this.lesson = lessonId;
-		this.trainee = traineeId;
+		this.lesson = lesson;
+		this.trainee = trainee;
 	}
 	
 	
 	//4. toString 
 	@Override
 	public String toString() {
-		return "LessonHistory [id=" + id + ", lessonDate=" + lessonDate + ", lessonId=" + lesson + ", traineeId="
+		return "LessonHistory [id=" + id + ", lessonDate=" + lessonDate + ", lesson=" + lesson + ", trainee="
 				+ trainee + "]";
 	}
 	 

@@ -14,6 +14,10 @@ public class Trainee {
 	private Date hireDate;
 
 	public Trainee() {}
+	
+	public Trainee(int id) {
+		this.id = id;
+	}	
 
 	public Trainee(int id, String name, Date birth, String sex, int height, int weight, String nationality,
 			Date hireDate) {
