@@ -13,7 +13,7 @@ public class Trainee {
 	private String nationality;
 	private Date hireDate;
 
-	Trainee() {}
+	public Trainee() {}
 
 	public Trainee(int id, String name, Date birth, String sex, int height, int weight, String nationality,
 			Date hireDate) {
