@@ -1,20 +1,71 @@
 package space.produce.menu;
 
+import java.util.List;
+import java.util.Scanner;
+
+import space.produce.care.Care;
+import space.produce.care.CareDAO;
+import space.produce.care.JDBCCareDao;
+
 public class CareMenu {
 
     public void readCare() {
         // JDBCCareDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
+    	CareDAO careDao = new JDBCCareDao(); 
+       	
+       	List<Care> cares = careDao.selectAll(); 
+       	 
+       	for ( int i = 0; i < cares.size(); i++ ) {
+       		System.out.println((i+1) + ": " + cares.get(i) );
+       	}
     }
 
-    public void addCare() {
-        // 사용자 입력으로 카테고리, 가격 받은 후 Care 객체 생성하여 JDBCCareDAO.insert 호출
-        // true 받으면 완료 메시지 출력
+    public boolean addCare() {
+    	
+    	JDBCCareDao jdbcCareDao = new JDBCCareDao();
+    	Care care = new Care(); 
+    	Scanner sc = new Scanner(System.in);
+    	
+    	System.out.println("종류를 입력하세요 : ");
+    	care.setCategory(sc.nextLine());
+    	
+    	System.out.println("금액을 입력하세요 : ");
+    	care.setCost(sc.nextInt());
+    	
+    	boolean rslt = jdbcCareDao.insert(care);
+    	
+    	if ( rslt ) {
+    		System.out.println("CARE 정보가 등록되었습니다.");
+    	} else {
+    		System.out.println("CARE 정보가 등록되지 않았습니다.");
+    	}
+    	
+    	sc.close();
+    	
+    	return rslt; 
     }
 
-    public void deleteCare() {
-        // JDBCCareDAO.selectAll으로 받아온 list 출력 후 (넘버링 해서)
-        // 사용자가 선택한 Care 객체의 id로 JDBCCareDAO.deleteById 호출
-        // true 받으면 완료 메시지 출력
+    public boolean deleteCare() {
+    	
+    	JDBCCareDao jdbcCareDao = new JDBCCareDao();
+    	Care care = new Care(); 
+    	Scanner sc = new Scanner(System.in);
+    	
+    	readCare();
+    	
+      	System.out.println("삭제하고 싶은 id를 입력해주세요.");
+      	int id = sc.nextInt();
+      	
+    	boolean rslt = jdbcCareDao.deleteById(id);
+      	
+      	if ( rslt ) {
+    		System.out.println("id가 "+id+"인 정보가 삭제되었습니다.");
+    	} else {
+    		System.out.println("CARE 정보가 삭제되지 않았습니다.");
+    	}
+    	
+      	sc.close();
+    	
+    	return rslt;	
     }
-
 }

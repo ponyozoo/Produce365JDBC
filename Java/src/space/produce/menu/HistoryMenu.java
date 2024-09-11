@@ -1,9 +1,22 @@
 package space.produce.menu;
 
-public class HistoryMenu {
+import java.util.List;
+import java.util.Scanner;
 
+import space.produce.careHistory.CareHistory;
+import space.produce.careHistory.CareHistoryDAO;
+import space.produce.careHistory.JDBCCareHistoryDao;
+
+public class HistoryMenu {
+	
     public void readCareHistory() {
-        // JDBCCareHistory.selectAll 호출해서 받아온 list 한 줄씩 출력
+        CareHistoryDAO careHistoryDao = new JDBCCareHistoryDao(); 
+    	
+    	List<CareHistory> careHistories = careHistoryDao.selectAll(); 
+    	 
+    	for ( int i = 0; i < careHistories.size(); i++ ) {
+    		System.out.println((i+1) + ": " + careHistories.get(i) );
+    	}
     }
 
     public void readLessonHistory() {
