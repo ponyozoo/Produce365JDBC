@@ -90,7 +90,7 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 	@Override
 	public List<DebutMember> selectByGroup(int groupId) {
 		List<DebutMember> debutMembers = new ArrayList<DebutMember>();
-		DebutMember debutMember = new DebutMember();
+		
 		
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement 
@@ -102,6 +102,7 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 			ResultSet rs = pStatement.executeQuery();
 			
 			while(rs.next()) {
+				DebutMember debutMember = new DebutMember();
 				debutMember.setIdx(rs.getInt("IDX"));
 				debutMember.setGroup(new Debut(rs.getInt("GROUP_ID")));
 				debutMember.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));	
