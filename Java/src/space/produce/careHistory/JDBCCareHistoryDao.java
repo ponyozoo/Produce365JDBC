@@ -55,7 +55,6 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 				careHistory.setIdx(rs.getInt("IDX"));
 				careHistory.setCareDate(rs.getDate("CARE_DATE"));
 				careHistory.setCare(new Care(rs.getInt("CARE_ID")));
-				careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 				careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
 				
 				careHistories.add(careHistory); 
@@ -85,7 +84,6 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 					
 					careHistory.setIdx(rs.getInt("IDX"));
 					careHistory.setCareDate(rs.getDate("CARE_DATE"));
-					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 					careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
 
