@@ -20,12 +20,13 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 
 	    try ( Connection connection = DataSource.getDataSource();
 	        PreparedStatement pStatement = 
-        		connection.prepareStatement("INSERT INTO CARE_HISTORY ( CARE_DATE, CARE_ID, TRAINEE_ID ) VALUES ( ?, ?, ? )") ) {
+
+    		connection.prepareStatement("INSERT INTO CARE_HISTORY ( CARE_DATE, CARE_ID, TRAINEE_ID ) VALUES ( ?, ?, ? )") ) {
 	
 	    	pStatement.setDate(1, careHistory.getCareDate());
 	        pStatement.setInt(2, careHistory.getCare().getId()); 
 	        pStatement.setInt(3, careHistory.getTrainee().getId());  
-	        
+        
 	        int rows = pStatement.executeUpdate();
 
 	        if (rows > 0) {
@@ -53,6 +54,7 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 				CareHistory careHistory = new CareHistory();
 				careHistory.setIdx(rs.getInt("IDX"));
 				careHistory.setCareDate(rs.getDate("CARE_DATE"));
+				careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 				careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 				careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
 				
@@ -83,6 +85,7 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 					
 					careHistory.setIdx(rs.getInt("IDX"));
 					careHistory.setCareDate(rs.getDate("CARE_DATE"));
+					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
 					careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
 
