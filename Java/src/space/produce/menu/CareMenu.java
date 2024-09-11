@@ -16,7 +16,7 @@ public class CareMenu {
        	List<Care> cares = careDao.selectAll(); 
        	 
        	for ( int i = 0; i < cares.size(); i++ ) {
-       		System.out.println((i+1) + ": " + cares.get(i) );
+       		System.out.println((i+1) + "번: " + cares.get(i) );
        	}
     }
 
@@ -46,26 +46,29 @@ public class CareMenu {
     }
 
     public boolean deleteCare() {
-    	
     	JDBCCareDao jdbcCareDao = new JDBCCareDao();
-    	Care care = new Care(); 
+    	CareDAO careDao = new JDBCCareDao(); 
     	Scanner sc = new Scanner(System.in);
     	
     	readCare();
     	
-      	System.out.println("삭제하고 싶은 id를 입력해주세요.");
-      	int id = sc.nextInt();
+      	System.out.println("삭제하고 싶은 번호를 입력해주세요.");
+      	int num = sc.nextInt();
       	
-    	boolean rslt = jdbcCareDao.deleteById(id);
+      	List<Care> cares = careDao.selectAll(); 
+      	
+      	int pickId = cares.get(num-1).getId();
+      	
+    	boolean rslt = jdbcCareDao.deleteById(pickId);
       	
       	if ( rslt ) {
-    		System.out.println("id가 "+id+"인 정보가 삭제되었습니다.");
+    		System.out.println(num+"번 정보가 삭제되었습니다.");
     	} else {
     		System.out.println("CARE 정보가 삭제되지 않았습니다.");
     	}
     	
       	sc.close();
-    	
+      	
     	return rslt;	
     }
 }
