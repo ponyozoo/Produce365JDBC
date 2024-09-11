@@ -1,7 +1,6 @@
 package space.produce.trainee;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,13 +29,11 @@ public class JdbcTraineeDao implements TraineeDao {
 			pStatement.setString(7, trainee.getNationality());
 			pStatement.setDate(8, trainee.getHireDate());
 
-			int Rows = pStatement.executeUpdate();
+			int rows = pStatement.executeUpdate();
 
-			if (Rows > 0) {
+			if (rows > 0) {
 				result = true;
 			}
-
-			System.out.println("insert 성공");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -54,17 +51,16 @@ public class JdbcTraineeDao implements TraineeDao {
 				PreparedStatement pStatement = connection.prepareStatement(
 						"UPDATE TRAINEE SET NAME = ? , HEIGHT = ? , WEIGHT = ? , NATIONALITY = ? WHERE ID = ? ")) {
 
-			pStatement.setString(1, "금주");
-			pStatement.setInt(2, 190);
-			pStatement.setInt(3, 75);
-			pStatement.setString(4, "미국");
-			pStatement.setInt(5, 1);
+			pStatement.setString(1, trainee.getName());
+			pStatement.setInt(2, trainee.getHeight());
+			pStatement.setInt(3, trainee.getWeight());
+			pStatement.setString(4, trainee.getNationality());
+			pStatement.setInt(5, trainee.getId());
 
 			int rows = pStatement.executeUpdate();
 
 			if (rows > 0) {
 				result = true;
-				System.out.println("Update 성공");
 			}
 
 		} catch (SQLException e) {
@@ -88,7 +84,6 @@ public class JdbcTraineeDao implements TraineeDao {
 
 			if (rows > 0) {
 				result = true;
-				System.out.println(id);
 			}
 
 		} catch (SQLException e) {
@@ -125,72 +120,66 @@ public class JdbcTraineeDao implements TraineeDao {
 
 		List<Trainee> trainees = new ArrayList<>();
 
-		String sql1 = ("SELECT * FROM TRAINEE WHERE SEX = ?");
-
 		try (Connection connection = DataSource.getDataSource();
-				PreparedStatement pStatement = connection.prepareStatement(sql1)) {
-			{
-				pStatement.setString(1, sex);
+				PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM TRAINEE WHERE SEX = ?")) {
 
-				ResultSet rs = pStatement.executeQuery();
+			pStatement.setString(1, sex);
 
-				while (rs.next()) {
-					Trainee trainee = new Trainee();
-					trainee.setId(rs.getInt("ID"));
-					trainee.setName(rs.getString("NAME"));
-					trainee.setBirth(rs.getDate("BIRTH"));
-					trainee.setSex(rs.getString("SEX"));
-					trainee.setHeight(rs.getInt("HEIGHT"));
-					trainee.setWeight(rs.getInt("WEIGHT"));
-					trainee.setNationality(rs.getString("NATIONALITY"));
-					trainee.setHireDate(rs.getDate("HIRE_DATE"));
+			ResultSet rs = pStatement.executeQuery();
 
-					trainees.add(trainee);
-				}
+			while (rs.next()) {
+				Trainee trainee = new Trainee();
+				trainee.setId(rs.getInt("ID"));
+				trainee.setName(rs.getString("NAME"));
+				trainee.setBirth(rs.getDate("BIRTH"));
+				trainee.setSex(rs.getString("SEX"));
+				trainee.setHeight(rs.getInt("HEIGHT"));
+				trainee.setWeight(rs.getInt("WEIGHT"));
+				trainee.setNationality(rs.getString("NATIONALITY"));
+				trainee.setHireDate(rs.getDate("HIRE_DATE"));
 
+				trainees.add(trainee);
 			}
 
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
+
 		return trainees;
 	}
 
 	@Override
-	public List<Trainee> selectByNationality(String Nationality) {
+
+	public List<Trainee> selectByNationality(String nationality) {
 
 		List<Trainee> trainees = new ArrayList<>();
 
-		String sql1 = ("SELECT * FROM TRAINEE WHERE NATIONALITY = ?");
-
 		try (Connection connection = DataSource.getDataSource();
-				PreparedStatement pStatement = connection.prepareStatement(sql1)) {
-			{
-				pStatement.setString(1, Nationality);
+				PreparedStatement pStatement = connection
+						.prepareStatement("SELECT * FROM TRAINEE WHERE NATIONALITY = ?")) {
 
-				ResultSet rs = pStatement.executeQuery();
+			pStatement.setString(1, nationality);
 
-				while (rs.next()) {
-					Trainee trainee = new Trainee();
-					trainee.setId(rs.getInt("ID"));
-					trainee.setName(rs.getString("NAME"));
-					trainee.setBirth(rs.getDate("BIRTH"));
-					trainee.setSex(rs.getString("SEX"));
-					trainee.setHeight(rs.getInt("HEIGHT"));
-					trainee.setWeight(rs.getInt("WEIGHT"));
-					trainee.setNationality(rs.getString("NATIONALITY"));
-					trainee.setHireDate(rs.getDate("HIRE_DATE"));
+			ResultSet rs = pStatement.executeQuery();
 
-					trainees.add(trainee);
-				}
+			while (rs.next()) {
+				Trainee trainee = new Trainee();
+				trainee.setId(rs.getInt("ID"));
+				trainee.setName(rs.getString("NAME"));
+				trainee.setBirth(rs.getDate("BIRTH"));
+				trainee.setSex(rs.getString("SEX"));
+				trainee.setHeight(rs.getInt("HEIGHT"));
+				trainee.setWeight(rs.getInt("WEIGHT"));
+				trainee.setNationality(rs.getString("NATIONALITY"));
+				trainee.setHireDate(rs.getDate("HIRE_DATE"));
 
+				trainees.add(trainee);
 			}
 
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
+
 		return trainees;
 	}
 

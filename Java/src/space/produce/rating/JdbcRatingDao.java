@@ -25,13 +25,11 @@ public class JdbcRatingDao implements RatingDao {
 			pStatement.setInt(2, rating.getTrainee().getId()); // TRAINEE_ID
 			pStatement.setString(3, rating.getGrade());
 
-			int Rows = pStatement.executeUpdate();
+			int rows = pStatement.executeUpdate();
 
-			if (Rows > 0) {
+			if (rows > 0) {
 				result = true;
 			}
-
-			System.out.println("insert 성공");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -47,17 +45,16 @@ public class JdbcRatingDao implements RatingDao {
 
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatment = connection
-						.prepareStatement("UPDATE RATING SET TRAINEE_ID = ? , GRADE = ? WHERE CATEGORY = ?")) {
+						.prepareStatement("UPDATE RATING SET GRADE = ? WHERE TRAINEE_ID = ? AND CATEGORY = ?")) {
 
-			pStatment.setInt(1, 12);
-			pStatment.setString(2, "A");
-			pStatment.setString(3, "RAP");
+			pStatment.setString(1, rating.getGrade()); 
+			pStatment.setInt(2, rating.getTrainee().getId());// TRAINEE_ID
+			pStatment.setString(3, rating.getCategory()); 
 
 			int rows = pStatment.executeUpdate();
 
 			if (rows > 0) {
 				result = true;
-				System.out.println("Update 성공");
 			}
 
 		} catch (SQLException e) {
