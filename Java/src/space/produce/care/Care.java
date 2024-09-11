@@ -48,6 +48,10 @@ public class Care {
 		this.cost = cost;
 	}
 	
+	public Care(int id) {
+		this.id = id; 
+	}
+	
 	
 	//4. toString
 	@Override
