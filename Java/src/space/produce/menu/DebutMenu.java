@@ -51,12 +51,7 @@ public class DebutMenu {
 		Date debutDate = Date.valueOf(inputDate);
 
 		// 입력받은debutDate이 오늘 이후인지 체크.
-		if (debutDate.compareTo(Date.valueOf(LocalDate.now())) > 0) {
-
-		} else {
-			System.out.println("다시 입력해주세요.");
-			addDebut();
-		}
+		if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0) { System.out.println("다시 입력해주세요."); }
 
 		Debut debut = new Debut();
 		debut.setName(name);
