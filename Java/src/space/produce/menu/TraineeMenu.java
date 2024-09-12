@@ -1,5 +1,6 @@
 package space.produce.menu;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,6 +8,7 @@ import space.produce.rating.JdbcRatingDao;
 import space.produce.rating.Rating;
 import space.produce.trainee.JdbcTraineeDao;
 import space.produce.trainee.Trainee;
+import space.produce.util.Util;
 
 public class TraineeMenu {
 
@@ -37,32 +39,54 @@ public class TraineeMenu {
 		// true 반환 받으면 성공 메시지 출력
 
 		// 원래 idx는 난수를 생성해서 넣어줄건데 기존 trainee table에서 중복 확인이 필요하므로
-		// 이 부분은 나중에 구현하도록 합시다!
-
-		System.out.print("이름을 입력하세요: ");
+		
+		System.out.println("이름을 입력하세요: ");
 		String name = scanner.nextLine();
 
-		System.out.print("성별을 입력하세요: ");
+		System.out.println("성별을 입력하세요: ");
 		String sex = scanner.nextLine();
 
-		System.out.print("생일 \"YYYY-MM-DD\"을 입력하세요: ");
+		System.out.println("생일 \"YYYY-MM-DD\"을 입력하세요: ");
 		String birth = scanner.nextLine();
 
-		System.out.print("키를 입력하세요: ");
-		String height = scanner.nextLine();
+		System.out.println("키를 입력하세요: ");
+		int height = scanner.nextInt();
+		scanner.nextLine();
 
-		System.out.print("몸무게를 입력하세요: ");
-		String weight = scanner.nextLine();
+		System.out.println("몸무게를 입력하세요: ");
+		int weight = scanner.nextInt();
+		scanner.nextLine();
 
 		System.out.println("국적을 입력하세요: ");
 		String nationality = scanner.nextLine();
 
-		System.out.print("입사일 \"YYYY-MM-DD\"을 입력하세요: ");
+		System.out.println("입사일 \"YYYY-MM-DD\"을 입력하세요: ");
 		String hireDate = scanner.nextLine();
 
-		Trainee trainee = new Trainee();
+		Util util = new Util();
+		int random = util.generateRandomNumber();
 
-//		JdbcTraineeDao.insert(trainee);
+		Date DateInput1 = Date.valueOf(birth);
+		Date DateInput2 = Date.valueOf(hireDate);
+
+		JdbcTraineeDao jdbcTraineeDao = new JdbcTraineeDao();
+		Trainee trainee = new Trainee();
+		trainee.setId(random);
+		trainee.setName(name);
+		trainee.setSex(sex);
+		trainee.setBirth(Date.valueOf(birth));
+		trainee.setHeight(height);
+		trainee.setWeight(weight);
+		trainee.setNationality(nationality);
+		trainee.setHireDate(Date.valueOf(hireDate));
+
+		boolean inserts = traineeDao.insert(trainee);
+
+		if (inserts) {
+			System.out.println("연습생 등록 완료되었습니다.");
+		} else {
+			System.out.println("연습생 등록 실패했습니다.");
+		}
 
 	}
 
@@ -228,7 +252,7 @@ public class TraineeMenu {
 		String grade = scanner.nextLine();
 
 		String subject = null;
-		
+
 		switch (option) {
 		case 1:
 			subject = "VOCAL";
@@ -251,7 +275,7 @@ public class TraineeMenu {
 		selectedRating.setCategory(subject);
 		selectedRating.setGrade(grade);
 		selectedRating.setTrainee(selectedTrainee);
-		
+
 		boolean isUpdated = raitingDao.update(selectedRating);
 
 		if (isUpdated) {
