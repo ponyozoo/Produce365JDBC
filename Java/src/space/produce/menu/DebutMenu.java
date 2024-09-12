@@ -18,38 +18,42 @@ import space.produce.trainee.TraineeDao;
 public class DebutMenu {
 	private Scanner scanner = new Scanner(System.in);
 
-	
 	public void selectDebutMenu() {
-		System.out.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정");
-		int selectMenu = Integer.parseInt(scanner.nextLine());
-		
-		switch(selectMenu){
-			case 1: {
-				readDebut();
-				break;
+
+		while (true) {
+			System.out.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정");
+			int selectMenu = Integer.parseInt(scanner.nextLine());
+
+			switch (selectMenu) {
+				case 1: {
+					readDebut();
+					break;
+				}
+				case 2: {
+					addDebut();
+					break;
+				}
+				case 3: {
+					deleteDebut();
+					break;
+				}
+				case 4: {
+					updateDebut();
+					break;
+				}
+				case 5: {
+					updateDebutMember();
+					break;
+				}
+				case 6: {
+					return;
+				}
 			}
-			case 2: {
-				addDebut();
-				break;
-			}
-			case 3: {
-				deleteDebut();
-				break;
-			}
-			case 4: {
-				updateDebut();
-				break;
-			}
-			case 5: {
-				updateDebutMember();
-				break;
-			}
+
 		}
-		
-		
+
 	}
-	
-	
+
 	public void readDebut() {
 		// JDBCDebutDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
 		DebutDao debutDao = new JDBCDebutDao();
@@ -83,8 +87,8 @@ public class DebutMenu {
 		Date debutDate = Date.valueOf(inputDate);
 
 		// 입력받은debutDate이 오늘 이후인지 체크.
-		if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0) { 
-			System.out.println("다시 입력해주세요."); 
+		if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0) {
+			System.out.println("다시 입력해주세요.");
 		}
 
 		Debut debut = new Debut();
@@ -216,12 +220,11 @@ public class DebutMenu {
 		}
 		System.out.println("✅ 데뷔조를 선택해주세요 : ");
 
-		//1-2. 수정할 데뷔조 선택
+		// 1-2. 수정할 데뷔조 선택
 		int selectTeam = Integer.parseInt(scanner.nextLine());
 		Debut pickTeam = debutList.get(selectTeam - 1);
-		
-		
-		if (selectMenu == 1) {//2. 멤버 추가
+
+		if (selectMenu == 1) {// 2. 멤버 추가
 
 			// 2-1. sql문으로 데뷔조에 포함 안 된 연습생목록 출력
 			TraineeDao traineeDao = new JdbcTraineeDao();
@@ -257,7 +260,6 @@ public class DebutMenu {
 			}
 
 		} else if (selectMenu == 2) {// 3.멤버 삭제
-
 
 			// 3-1 sql문으로 데뷔멤버 테이블에 있는 연습생목록 출력
 			DebutMemberDao DebutMemberDao = new JDBCDebutMemberDao();
