@@ -3,12 +3,15 @@ package space.produce.menu;
 import java.util.List;
 import java.util.Scanner;
 
+import space.produce.rating.JdbcRatingDao;
+import space.produce.rating.Rating;
 import space.produce.trainee.JdbcTraineeDao;
 import space.produce.trainee.Trainee;
 
 public class TraineeMenu {
 
 	private JdbcTraineeDao traineeDao = new JdbcTraineeDao();
+	private JdbcRatingDao raitingDao = new JdbcRatingDao();
 	private Scanner scanner = new Scanner(System.in);
 
 	public void readTraineeAll() {
@@ -17,14 +20,11 @@ public class TraineeMenu {
 
 		List<Trainee> trainees = traineeDao.selectAll();
 
-		System.out.println("ID | 이름 | 성별 | 생일");
+		System.out.println("사번 | 이름 | 성별 | 생일");
 
 		for (int i = 0; i < trainees.size(); i++) {
 			Trainee trainee = trainees.get(i);
-			System.out.printf("%d | %s | %s | %s\n", 
-					trainee.getId(), 
-					trainee.getName(), 
-					trainee.getSex(),
+			System.out.printf("%d | %s | %s | %s\n", trainee.getId(), trainee.getName(), trainee.getSex(),
 					trainee.getBirth());
 		}
 	}
@@ -38,9 +38,33 @@ public class TraineeMenu {
 
 		// 원래 idx는 난수를 생성해서 넣어줄건데 기존 trainee table에서 중복 확인이 필요하므로
 		// 이 부분은 나중에 구현하도록 합시다!
+
+		System.out.print("이름을 입력하세요: ");
+		String name = scanner.nextLine();
+
+		System.out.print("성별을 입력하세요: ");
+		String sex = scanner.nextLine();
+
+		System.out.print("생일 \"YYYY-MM-DD\"을 입력하세요: ");
+		String birth = scanner.nextLine();
+
+		System.out.print("키를 입력하세요: ");
+		String height = scanner.nextLine();
+
+		System.out.print("몸무게를 입력하세요: ");
+		String weight = scanner.nextLine();
+
+		System.out.println("국적을 입력하세요: ");
+		String nationality = scanner.nextLine();
+
+		System.out.print("입사일 \"YYYY-MM-DD\"을 입력하세요: ");
+		String hireDate = scanner.nextLine();
+
+		Trainee trainee = new Trainee();
+
+//		JdbcTraineeDao.insert(trainee);
+
 	}
-	
-	
 
 	public void deleteTrainee() {
 		// JDBCTraineeDAO.selectAll으로 받아온 list 출력 후 (넘버링해서)
@@ -51,14 +75,11 @@ public class TraineeMenu {
 
 		for (int i = 0; i < trainees.size(); i++) {
 			Trainee trainee = trainees.get(i);
-			System.out.printf("ID : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", 
-					trainee.getId(), 
-					trainee.getName(),
-					trainee.getSex(), 
-					trainee.getBirth());
+			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", trainee.getId(), trainee.getName(),
+					trainee.getSex(), trainee.getBirth());
 		}
 
-		System.out.print("삭제할 연습생의 ID를 입력하세요: ");
+		System.out.print("삭제할 연습생의 사번을 입력하세요: ");
 		int id = scanner.nextInt();
 
 		boolean isDeleted = traineeDao.deleteById(id);
@@ -102,14 +123,11 @@ public class TraineeMenu {
 		System.out.println("전체 연습생 목록");
 		for (int i = 0; i < trainees.size(); i++) {
 			Trainee trainee = trainees.get(i);
-			System.out.printf("ID : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", 
-					trainee.getId(), 
-					trainee.getName(),
-					trainee.getSex(), 
-					trainee.getBirth());
+			System.out.printf("%d번 사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", (i + 1), trainee.getId(),
+					trainee.getName(), trainee.getSex(), trainee.getBirth());
 		}
 
-		System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생을 선택해 주세요");
+		System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생의 사번 선택해 주세요");
 		int id = scanner.nextInt();
 		Trainee selectedTrainee = null;
 
@@ -121,7 +139,7 @@ public class TraineeMenu {
 		}
 
 		if (selectedTrainee == null) {
-			System.out.println("해당 ID의 연습생을 찾을 수 없습니다.");
+			System.out.println("해당 사번의 연습생을 찾을 수 없습니다.");
 			return;
 		}
 
@@ -166,6 +184,80 @@ public class TraineeMenu {
 	}
 
 	public void updateGrade() {
-		// 이거는 나중에
+
+//		전체출력
+//		ID받고
+//		종목별 선택 (넘버링) / rap, dance...
+//		값입력 a-f , String으로 받기 , A부터F 사이로 선택해 주세요
+//		메소드 호출
+//		DB연결
+
+		List<Trainee> trainees = traineeDao.selectAll();
+
+		System.out.println("전체 연습생 목록");
+		for (int i = 0; i < trainees.size(); i++) {
+			Trainee trainee = trainees.get(i);
+			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", trainee.getId(), trainee.getName(),
+					trainee.getSex(), trainee.getBirth());
+		}
+
+		System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생의 사번 선택해 주세요");
+		int id = scanner.nextInt();
+		Trainee selectedTrainee = null;
+		Rating selectedRating = new Rating();
+
+		for (Trainee trainee : trainees) {
+			if (trainee.getId() == id) {
+				selectedTrainee = trainee;
+				break;
+			}
+		}
+
+		if (selectedTrainee == null) {
+			System.out.println("해당 사번의 연습생을 찾을 수 없습니다.");
+			return;
+		}
+
+		System.out.println("1. VOCAL  2. RAP  3. DANCE  4. TOTAL");
+		System.out.print("종목을 선택해 주세요: ");
+		int option = scanner.nextInt();
+		scanner.nextLine();
+
+		System.out.print("A부터 F사이의 등급 중 선택해 주세요: ");
+
+		String grade = scanner.nextLine();
+
+		String subject = null;
+		
+		switch (option) {
+		case 1:
+			subject = "VOCAL";
+			break;
+		case 2:
+			subject = "RAP";
+			break;
+		case 3:
+			subject = "DANCE";
+			break;
+		case 4:
+			subject = "TOTAL";
+			break;
+
+		default:
+			System.out.println("잘못된 선택입니다.");
+			return;
+		}
+
+		selectedRating.setCategory(subject);
+		selectedRating.setGrade(grade);
+		selectedRating.setTrainee(selectedTrainee);
+		
+		boolean isUpdated = raitingDao.update(selectedRating);
+
+		if (isUpdated) {
+			System.out.println("" + subject + "를 " + grade + " 등급으로 업데이트 완료했습니다");
+		} else {
+			System.out.println("등급 업데이트에 실패했습니다.");
+		}
 	}
 }
