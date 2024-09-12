@@ -18,6 +18,38 @@ import space.produce.trainee.TraineeDao;
 public class DebutMenu {
 	private Scanner scanner = new Scanner(System.in);
 
+	
+	public void selectDebutMenu() {
+		System.out.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정");
+		int selectMenu = Integer.parseInt(scanner.nextLine());
+		
+		switch(selectMenu){
+			case 1: {
+				readDebut();
+				break;
+			}
+			case 2: {
+				addDebut();
+				break;
+			}
+			case 3: {
+				deleteDebut();
+				break;
+			}
+			case 4: {
+				updateDebut();
+				break;
+			}
+			case 5: {
+				updateDebutMember();
+				break;
+			}
+		}
+		
+		
+	}
+	
+	
 	public void readDebut() {
 		// JDBCDebutDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
 		DebutDao debutDao = new JDBCDebutDao();
