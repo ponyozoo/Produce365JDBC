@@ -116,6 +116,37 @@ public class JdbcTraineeDao implements TraineeDao {
 	}
 
 	@Override
+
+	public Trainee selectById(int id) {
+		Trainee selectedTrainee = null;
+
+		try (Connection connection = DataSource.getDataSource();
+				PreparedStatement pStatment = connection.prepareStatement("SELECT * FROM TRAINEE WHERE ID = ?")) {
+
+			pStatment.setInt(1, id);
+			ResultSet rs = pStatment.executeQuery();
+
+			if (rs.next()) {
+				selectedTrainee = new Trainee();
+				selectedTrainee.setId(rs.getInt("ID"));
+				selectedTrainee.setName(rs.getString("NAME"));
+				selectedTrainee.setBirth(rs.getDate("BIRTH"));
+				selectedTrainee.setSex(rs.getString("SEX"));
+				selectedTrainee.setHeight(rs.getInt("HEIGHT"));
+				selectedTrainee.setWeight(rs.getInt("WEIGHT"));
+				selectedTrainee.setNationality(rs.getString("NATIONALITY"));
+				selectedTrainee.setHireDate(rs.getDate("HIRE_DATE"));
+
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return selectedTrainee;
+	}
+	
+	@Override
 	public List<Trainee> selectBySex(String sex) {
 
 		List<Trainee> trainees = new ArrayList<>();

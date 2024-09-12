@@ -12,6 +12,8 @@ public interface TraineeDao {
 	boolean deleteById(int id);
 
 	List<Trainee> selectAll();
+	
+	Trainee selectById(int id);
 
 	List<Trainee> selectBySex(String sex); // join
 
