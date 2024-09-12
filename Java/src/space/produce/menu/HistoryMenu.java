@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import space.produce.care.Care;
+import space.produce.care.CareDAO;
 import space.produce.care.JDBCCareDao;
 import space.produce.careHistory.CareHistory;
 import space.produce.careHistory.CareHistoryDAO;
@@ -22,14 +23,15 @@ import space.produce.util.MyScanner;
 
 public class HistoryMenu {
 	
-	public CareHistoryDAO careHistoryDao = new JDBCCareHistoryDao(); 
-	public LessonHistoryDAO lessonHistoryDao = new JDBCLessonHistoryDao();
+	private CareHistoryDAO careHistDao = new JDBCCareHistoryDao();
+	private CareDAO careDao = new JDBCCareDao(); 
+	private LessonHistoryDAO lessonHistoryDao = new JDBCLessonHistoryDao();
 	private LessonDAO lessonDao = new JDBCLessonDao();
-	public TraineeDao traineeDao = new JdbcTraineeDao();
+	private TraineeDao traineeDao = new JdbcTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 	
     public void readCareHistory() {
-    	List<CareHistory> careHistories = careHistoryDao.selectAll(); 
+    	List<CareHistory> careHistories = careHistDao.selectAll(); 
     	 
     	for ( int i = 0; i < careHistories.size(); i++ ) {
     		System.out.println((i+1) + ": " + careHistories.get(i) );
@@ -44,68 +46,65 @@ public class HistoryMenu {
     	}
     }
 
-    public boolean addCareHistory() {
-    	JDBCCareDao jdbcCareDao = new JDBCCareDao(); 
-    	JDBCCareHistoryDao jdbcCareHistory = new JDBCCareHistoryDao();
-    	JdbcTraineeDao jdbcTraineeDao = new JdbcTraineeDao();
+    public void addCareHistory() {
     	CareHistory careHistory = new CareHistory();
     	Date date = null;
-    	Scanner sc = new Scanner(System.in);
     	
-    	List<Care> cares = jdbcCareDao.selectAll();
+    	List<Care> cares = careDao.selectAll();
     	
     	// 넘버링으로 케어 목록을 조회
     	for ( int i = 0; i < cares.size(); i++ ) {
        		System.out.println((i+1) + "번: " + cares.get(i) );
        	}
     	
-    	// 히스토리 남길 번호 입력 받기 
-    	System.out.println("CARE HISTORY에 저장하고 싶은 CARE 번호를 입력해 주세요.");
-    	int careInputNum = Integer.parseInt(sc.nextLine()); 
-    	int careNum = cares.get(careInputNum-1).getId(); 
+    	int careNum = 0;
+    	
+    	// 히스토리 남길 번호 입력 받기
+    	while (true) {
+    		System.out.print("CARE HISTORY에 저장하고 싶은 CARE 번호를 입력해 주세요 : ");
+    		careNum = scanner.takeInt(1, cares.size());
+    		if (careNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+    	
+    	int careId = cares.get(careNum-1).getId(); 
     	
     	// 연습생 넘버링으로 목록 출력
-    	List<Trainee> trainees = jdbcTraineeDao.selectAll(); 
+    	List<Trainee> trainees = traineeDao.selectAll(); 
     	
     	for ( int i = 0; i < trainees.size(); i++ ) {
        		System.out.println((i+1) + "번: " + trainees.get(i) );
        	}
     	
+    	int traineeNum = 0; 
+    	
     	// 연습생 번호 입력 받기
-    	System.out.println("CARE HISTORY에 저장하고 싶은 연습생 번호를 입력해 주세요.");
-    	int traineeInputNum = Integer.parseInt(sc.nextLine());
-    	int traineeNum = trainees.get(traineeInputNum-1).getId(); 
-    	
-    	// DATE
-    	System.out.println("일자를 YYYY-MM-DD 형식으로 입력해 주세요. (오늘이라면 엔터를 눌러주세요) ");
-    	String inputDate = sc.nextLine();
-    	
-    	if ( inputDate instanceof String && (!inputDate.equals("")) ) {
-    		date = Date.valueOf(inputDate);
-    	} else {
-    		date = new Date(System.currentTimeMillis());
+    	while (true) {
+    		System.out.print("CARE HISTORY에 저장하고 싶은 연습생 번호를 입력해 주세요 : ");
+    		traineeNum = scanner.takeInt(1, trainees.size());
+    		if (traineeNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
     	}
     	
-    	if ( date.equals("") ) { // empty string
-    		careHistory.setCare(new Care(careNum));
-    		careHistory.setTrainee(new Trainee(traineeNum));
-    	} else {
-    		careHistory.setCareDate(date);
-    		careHistory.setCare(new Care(careNum));
-    		careHistory.setTrainee(new Trainee(traineeNum));
+    	int traineeId = trainees.get(traineeNum-1).getId(); 
+    	
+    	while (true) {
+    		System.out.println("CARE HISTORY 일자를 입력해 주세요 (오늘이라면 엔터를 눌러주세요) : ");
+    		String careHistDateStr = scanner.takeStr();
+    		try {
+	    		Date careHistDate = careHistDateStr == "" ? null : Date.valueOf(careHistDateStr);
+				if (careHistDao.insert(new CareHistory(0, careHistDate, cares.get(careNum - 1), trainees.get(traineeNum - 1))))
+					System.out.println("✔️ 등록 완료");
+				else
+					System.out.println("❌ 등록 실패");
+    		} catch (Exception e) {    			
+    			System.out.println("🚨 올바른 값을 입력해주세요");
+    			continue ;
+    		}
+    		break ;
     	}
-    	
-    	boolean result = jdbcCareHistory.insert(careHistory); 
-    	
-    	if ( result ) {
-    		System.out.println("CARE HISTORY에 정보가 저장되었습니다.");
-    	} else {
-    		System.out.println("CARE HISTORY에 정보가 저장되지 못했습니다.");
-    	}
-    	
-    	sc.close();
-    	
-    	return result; 
     }
 
     public void addLessonHistory() {
