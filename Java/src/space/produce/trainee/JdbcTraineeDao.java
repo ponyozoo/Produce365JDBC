@@ -183,4 +183,38 @@ public class JdbcTraineeDao implements TraineeDao {
 		return trainees;
 	}
 
+	@Override
+	public List<Trainee> selectNoDebut() {
+		List<Trainee> traineesNoDebut = new ArrayList<>();
+
+		try (Connection connection = DataSource.getDataSource();
+				PreparedStatement pStatement = connection.prepareStatement(
+						"SELECT T.ID, T.NAME, T.BIRTH, T.SEX, T.HEIGHT, T.WEIGHT, T.NATIONALITY, T.HIRE_DATE, D.GROUP_ID FROM"
+								+ " TRAINEE T LEFT OUTER JOIN DEBUT_MEMBER D" + " ON T.ID = D.TRAINEE_ID"
+								+ " WHERE GROUP_ID IS NULL" + " ORDER BY T.ID");
+				ResultSet rs = pStatement.executeQuery()) {
+
+			while (rs.next()) {
+				Trainee trainee = new Trainee(
+						rs.getInt("ID"), 
+						rs.getString("NAME"), 
+						rs.getDate("BIRTH"),
+						rs.getString("SEX"), 
+						rs.getInt("HEIGHT"), 
+						rs.getInt("WEIGHT"), 
+						rs.getString("NATIONALITY"),
+						rs.getDate("HIRE_DATE")
+
+						);
+
+				traineesNoDebut.add(trainee);
+			}
+			
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return traineesNoDebut;
+	}
+
 }
