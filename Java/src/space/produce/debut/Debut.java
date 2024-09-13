@@ -76,7 +76,7 @@ public class Debut {
 	
 	@Override
 	public String toString() {
-		return "Debut [id=" + id + ", name=" + name + ", memberCount=" + memberCount + ", concept=" + concept
-				+ ", grade=" + grade + ", debutDate=" + debutDate + "]";
+		return "➤ 그룹명: " + this.name + " ➤ 인원 수: " + this.memberCount + " ➤ 컨셉: " + this.concept
+				+ " ➤ 종합 평가 등급: " + this.grade + " ➤ 데뷔 예정일: " + this.debutDate;
 	}
 }
