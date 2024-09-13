@@ -23,7 +23,7 @@ import space.produce.util.MyScanner;
 
 public class HistoryMenu {
 	
-	private CareHistoryDAO careHistDao = new JDBCCareHistoryDao();
+	private CareHistoryDAO careHistoryDao = new JDBCCareHistoryDao();
 	private CareDAO careDao = new JDBCCareDao(); 
 	private LessonHistoryDAO lessonHistoryDao = new JDBCLessonHistoryDao();
 	private LessonDAO lessonDao = new JDBCLessonDao();
@@ -32,34 +32,39 @@ public class HistoryMenu {
 	
 	public void selectHistoryMenu() {
 		while (true) {
-			System.out.println("메뉴를 선택해주세요 : 1. 케어 기록 정보 조회 2. 연습생 수업 정보 조회 3. 케어 기록 정보 추가 4. 수업 기록 정보 추가 5. 뒤로 가기");
+			System.out.println("""
+					
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                            [ 매니징 아카이브 ]
+			
+			               1. 케어 기록 조회   2. 케어 기록 추가   3. 수업 기록 조회   4. 수업 기록 추가   5. 뒤로 가기                 
+			_______________________________________________________________________________________________________
+					                
+			""");
+			
 			int selectMenu = scanner.takeInt(1, 5);
-
 			if (selectMenu == -1) {
-				// -1을 반환하면= "올바른 값을 입력해주세요" 를 출력하고 switch문을 실행하지 않고 반복문을 재실행.
 				System.out.println("🚨 올바른 값을 입력해주세요");
 				continue;
 			}
+			
+			System.out.println("");
 			switch (selectMenu) {
-				case 1: {
+				case 1: 
 					readCareHistory();
 					break;
-				}
-				case 2: {
-					readLessonHistory();
-					break;
-				}
-				case 3: {
+				case 2: 
 					addCareHistory();
 					break;
-				}
-				case 4: {
+				case 3: 
+					readLessonHistory();
+					break;
+				case 4: 
 					addLessonHistory();
 					break;
-				}
-				case 5: {
+				case 5: 
 					return;
-				}
 			}
 
 		}
@@ -67,76 +72,238 @@ public class HistoryMenu {
 	}
 	
     public void readCareHistory() {
-    	List<CareHistory> careHistories = careHistDao.selectAll(); 
-    	 
-    	for ( int i = 0; i < careHistories.size(); i++ ) {
-    		System.out.println((i+1) + ": " + careHistories.get(i) );
-    	}
-    }
-
-    public void readLessonHistory() {
-    	List<LessonHistory> lessonHistories = lessonHistoryDao.selectAll();
-    	
-    	for (int i = 0; i < lessonHistories.size(); i++) {
-    		System.out.println((i + 1) + ". " + lessonHistories.get(i));
-    	}
-    }
-
-    public void addCareHistory() {
-    	CareHistory careHistory = new CareHistory();
-    	Date date = null;
-    	
-    	List<Care> cares = careDao.selectAll();
-    	
-    	// 넘버링으로 케어 목록을 조회
-    	for ( int i = 0; i < cares.size(); i++ ) {
-       		System.out.println((i+1) + "번: " + cares.get(i) );
-       	}
-    	
-    	int careNum = 0;
-    	
-    	// 히스토리 남길 번호 입력 받기
     	while (true) {
-    		System.out.print("CARE HISTORY에 저장하고 싶은 CARE 번호를 입력해 주세요 : ");
-    		careNum = scanner.takeInt(1, cares.size());
-    		if (careNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
+        	System.out.println("""
+        			
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                             [ 케어 기록 조회 ]
+			
+			                         1. 전체 조회    2. 연습생별 조회    3. 항목별 조회    4. 뒤로 가기                    
+			_______________________________________________________________________________________________________
+					                
+			""");
+    		
+    		int selectMenu = scanner.takeInt(1, 4);
+    		if (selectMenu == -1) {
+    			System.out.println("🚨 올바른 값을 입력해주세요");
+    			continue;
+    		}
+    		
+    		System.out.println("");
+    		switch (selectMenu) {
+    		case 1:
+    			readCareHistoryAll();
+    			break;
+    		case 2: 
+    			readCareHistoryByTrainee();
+    			break;
+    		case 3: 
+    			readCareHistoryByCategory();
+    			break;
+    		case 4:
+    			return;
+    		}
     	}
-    	
-    	int careId = cares.get(careNum-1).getId(); 
-    	
-    	// 연습생 넘버링으로 목록 출력
+    }
+    
+    public void readLessonHistory() {
+    	while (true) {
+        	System.out.println("""
+			
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                             [ 수업 기록 조회 ]
+			
+			                         1. 전체 조회    2. 연습생별 조회    3. 수업별 조회    4. 뒤로 가기                    
+			_______________________________________________________________________________________________________
+					                
+			""");
+        	
+        	int selectMenu = scanner.takeInt(1, 4);
+        	if (selectMenu == -1) {
+        		System.out.println("🚨 올바른 값을 입력해주세요");
+        		continue;
+        	}
+        	
+        	System.out.println("");
+        	switch (selectMenu) {
+	        	case 1:
+	        		readLessonHistoryAll();
+	        		break;
+	        	case 2: 
+	        		readLessonHistoryByTrainee();
+	        		break;
+	        	case 3: 
+	        		readLessonHistoryBySubject();
+	        		break;
+	        	case 4:
+	        		return;
+        	}
+    	}
+    }
+    
+    public void readCareHistoryAll() {
+    	List<CareHistory> careHistories = careHistoryDao.selectAll(); 
+   	 
+    	for ( int i = 0; i < careHistories.size(); i++ ) {
+    		System.out.println(careHistories.get(i));
+    	}
+    }
+    
+    public void readCareHistoryByTrainee() {
     	List<Trainee> trainees = traineeDao.selectAll(); 
     	
     	for ( int i = 0; i < trainees.size(); i++ ) {
-       		System.out.println((i+1) + "번: " + trainees.get(i) );
-       	}
+    		System.out.println((i+1) + ". " + trainees.get(i));
+    	}
     	
     	int traineeNum = 0; 
-    	
-    	// 연습생 번호 입력 받기
     	while (true) {
-    		System.out.print("CARE HISTORY에 저장하고 싶은 연습생 번호를 입력해 주세요 : ");
+    		System.out.print("\n연습생을 선택해주세요 : ");
     		traineeNum = scanner.takeInt(1, trainees.size());
     		if (traineeNum != -1)
     			break ;
     		System.out.println("🚨 올바른 값을 입력해주세요");
     	}
     	
-    	int traineeId = trainees.get(traineeNum-1).getId(); 
+    	System.out.println("");
+
+    	List<CareHistory> careHistories = careHistoryDao.selectByTraineeId(trainees.get(traineeNum - 1).getId());
+    	
+    	for (int i = 0; i < careHistories.size(); i++) {
+    		System.out.println(careHistories.get(i));
+    	}
+    }
+    
+    public void readCareHistoryByCategory() {
+    	List<Care> cares = careDao.selectAll(); 
+    	
+    	for ( int i = 0; i < cares.size(); i++ ) {
+    		System.out.println((i+1) + ". " + cares.get(i));
+    	}
+    	
+    	int careNum = 0; 
+    	while (true) {
+    		System.out.print("\n케어 항목을 선택해주세요 : ");
+    		careNum = scanner.takeInt(1, cares.size());
+    		if (careNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+
+    	System.out.println("");
+    	
+    	List<CareHistory> careHistories = careHistoryDao.selectByCareId(cares.get(careNum - 1).getId());
+    	
+    	for (int i = 0; i < careHistories.size(); i++) {
+    		System.out.println(careHistories.get(i));
+    	}
+    }
+    
+    public void readLessonHistoryAll() {
+    	List<LessonHistory> lessonHistories = lessonHistoryDao.selectAll();
+    	
+    	for (int i = 0; i < lessonHistories.size(); i++) {
+    		System.out.println(lessonHistories.get(i));
+    	}    	
+    }
+    
+    public void readLessonHistoryByTrainee() {
+    	List<Trainee> trainees = traineeDao.selectAll(); 
+    	
+    	for ( int i = 0; i < trainees.size(); i++ ) {
+    		System.out.println((i+1) + ". " + trainees.get(i));
+    	}
+    	
+    	int traineeNum = 0; 
+    	while (true) {
+    		System.out.print("\n연습생을 선택해주세요 : ");
+    		traineeNum = scanner.takeInt(1, trainees.size());
+    		if (traineeNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+    	
+    	System.out.println("");
+
+    	List<LessonHistory> lessonHistories = lessonHistoryDao.selectByTraineeId(trainees.get(traineeNum - 1).getId());
+    	
+    	for (int i = 0; i < lessonHistories.size(); i++) {
+    		System.out.println(lessonHistories.get(i));
+    	}
+    }
+    
+    public void readLessonHistoryBySubject() {
+    	List<Lesson> lessons = lessonDao.selectAll(); 
+    	
+    	for ( int i = 0; i < lessons.size(); i++ ) {
+    		System.out.println((i+1) + ". " + lessons.get(i));
+    	}
+    	
+    	int lessonNum = 0; 
+    	while (true) {
+    		System.out.print("\n수업을 선택해주세요 : ");
+    		lessonNum = scanner.takeInt(1, lessons.size());
+    		if (lessonNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+
+    	System.out.println("");
+    	
+    	List<LessonHistory> lessonHistories = lessonHistoryDao.selectByLessonId(lessons.get(lessonNum - 1).getId());
+    	
+    	for (int i = 0; i < lessonHistories.size(); i++) {
+    		System.out.println(lessonHistories.get(i));
+    	}
+    }
+
+    public void addCareHistory() {    	
+    	List<Care> cares = careDao.selectAll();
+    	
+    	for ( int i = 0; i < cares.size(); i++ ) {
+       		System.out.println((i+1) + ". " + cares.get(i));
+       	}
+    	
+    	int careNum = 0;
     	
     	while (true) {
-    		System.out.println("CARE HISTORY 일자를 입력해 주세요 (오늘이라면 엔터를 눌러주세요) : ");
+    		System.out.print("\n케어 종류를 선택해주세요 : ");
+    		careNum = scanner.takeInt(1, cares.size());
+    		if (careNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+    	
+    	System.out.println("");
+    	    	
+    	List<Trainee> trainees = traineeDao.selectAll(); 
+    	
+    	for ( int i = 0; i < trainees.size(); i++ ) {
+       		System.out.println((i+1) + ". " + trainees.get(i));
+       	}
+    	
+    	int traineeNum = 0; 
+    	while (true) {
+    		System.out.print("\n연습생을 선택해주세요 : ");
+    		traineeNum = scanner.takeInt(1, trainees.size());
+    		if (traineeNum != -1)
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요");
+    	}
+    	    	
+    	while (true) {
+    		System.out.print("케어 받은 날짜를 입력해 주세요 (오늘이라면 엔터를 눌러주세요) : ");
     		String careHistDateStr = scanner.takeStr();
     		try {
 	    		Date careHistDate = careHistDateStr == "" ? null : Date.valueOf(careHistDateStr);
-				if (careHistDao.insert(new CareHistory(0, careHistDate, cares.get(careNum - 1), trainees.get(traineeNum - 1))))
+				if (careHistoryDao.insert(new CareHistory(0, careHistDate, cares.get(careNum - 1), trainees.get(traineeNum - 1))))
 					System.out.println("✔️ 등록 완료");
 				else
 					System.out.println("❌ 등록 실패");
     		} catch (Exception e) {    			
-    			System.out.println("🚨 올바른 값을 입력해주세요");
+    			System.out.println("🚨 올바른 값을 입력해주세요 (날짜는 YYYY-MM-DD 형식입니다)\n");
     			continue ;
     		}
     		break ;
@@ -153,20 +320,22 @@ public class HistoryMenu {
     	
     	int lessonNum = 0;
     	while (true) {
-    		System.out.print("수업을 선택해주세요 : ");
+    		System.out.print("\n수업을 선택해주세요 : ");
     		lessonNum = scanner.takeInt(1, lessons.size());
     		if (lessonNum != -1)
     			break ;
     		System.out.println("🚨 올바른 값을 입력해주세요");
     	}
     	
+    	System.out.println("");
+
     	for (int i = 0; i < trainees.size(); i++) {
     		System.out.println((i + 1) + ". " + trainees.get(i));
     	}
     	
     	int traineeNum = 0;
     	while (true) {
-    		System.out.print("연습생을 선택해주세요 : ");
+    		System.out.print("\n연습생을 선택해주세요 : ");
     		traineeNum = scanner.takeInt(1, trainees.size());
     		if (traineeNum != -1)
     			break ;
@@ -174,7 +343,7 @@ public class HistoryMenu {
     	}    	
     	
     	while (true) {
-    		System.out.print("수업 날짜를 입력해주세요 (오늘이라면 엔터를 눌러주세요) : ");
+    		System.out.print("수업 진행 날짜를 입력해주세요 (오늘이라면 엔터를 눌러주세요) : ");
     		String lessonDateStr = scanner.takeStr();
     		try {
 	    		Date lessonDate = lessonDateStr == "" ? null : Date.valueOf(lessonDateStr);
@@ -183,11 +352,10 @@ public class HistoryMenu {
 				else
 					System.out.println("❌ 등록 실패");
     		} catch (Exception e) {    			
-    			System.out.println("🚨 올바른 값을 입력해주세요");
+    			System.out.println("🚨 올바른 값을 입력해주세요 (날짜는 YYYY-MM-DD 형식입니다)\n");
     			continue ;
     		}
     		break ;
     	}
     }
-    
 }

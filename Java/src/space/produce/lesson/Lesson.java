@@ -51,8 +51,8 @@ public class Lesson {
 	//3. 생성자(디폴트, 컬럼 전부 밭는 것)
 	public Lesson() {}
 	
-	public Lesson(int id) {
-		this.id = id;
+	public Lesson(String subject) {
+		this.subject = subject;
 	}
 	
 	public Lesson(int id, String trainer, String subject, float time) {
@@ -66,7 +66,7 @@ public class Lesson {
 	//4. toString
 	@Override
 	public String toString() {
-		return "Lesson [id=" + id + ", trainer=" + trainer + ", subject=" + subject + ", time=" + time + "]";
+		return "➤ 수업명: " + this.subject + " ➤ 트레이너: " + this.trainer + " ➤ 총 수업 시간: " + this.time;
 	}
 
 }

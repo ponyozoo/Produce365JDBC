@@ -41,20 +41,20 @@ public class Care {
 
 	// 3. 생성자(디폴트, 컬럼 전부 밭는 것)
 	public Care() {}
+
+	public Care(String category) {
+		this.category = category; 
+	}
 	
 	public Care(int id, String category, int cost) {
 		this.id = id;
 		this.category = category;
 		this.cost = cost;
 	}
-	
-	public Care(int id) {
-		this.id = id; 
-	}
 
 	//4. toString
 	@Override
 	public String toString() {
-		return "Care [id=" + id + ", category=" + category + ", cost=" + cost + "]";
+		return "➤ 케어 종류: " + this.category + " ➤ 가격: " + this.cost;
 	}
 }

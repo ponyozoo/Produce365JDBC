@@ -71,8 +71,7 @@ public class LessonHistory {
 	//4. toString 
 	@Override
 	public String toString() {
-		return "LessonHistory [id=" + id + ", lessonDate=" + lessonDate + ", lesson=" + lesson + ", trainee="
-				+ trainee + "]";
+		return "➤ 날짜: " + this.lessonDate + " ➤ 수업명: " + this.lesson.getSubject() + " ➤ 연습생: " + this.trainee.getName();
 	}
 	 
 	

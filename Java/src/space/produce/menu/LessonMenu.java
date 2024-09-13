@@ -11,6 +11,42 @@ public class LessonMenu {
 	
 	private	JDBCLessonDao dao = new JDBCLessonDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
+	
+	public void selectLessonMenu() {
+		while (true) {
+			System.out.println("""
+					
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                               [ 수업 관리 ]
+			
+			                        1. 전체 수업 조회     2. 수업 추가     3. 수업 삭제     4. 뒤로 가기                 
+			_______________________________________________________________________________________________________
+					                
+			""");
+			
+			int selectedNum = scanner.takeInt(1, 4);
+			if (selectedNum == -1) {
+				System.out.println("🚨 올바른 값을 입력해주세요");
+				continue ;
+			}
+			
+			System.out.println("");
+			switch (selectedNum) {
+				case 1 : 
+					readLesson();
+					break ;
+				case 2 :
+					addLesson();
+					break ;
+				case 3 :
+					deleteLesson();
+					break ;
+				case 4 :
+					return ;
+			}
+		}
+	}
 
     public void readLesson() {
     	List<Lesson> allLesson = dao.selectAll();
@@ -21,23 +57,40 @@ public class LessonMenu {
     }
 
     public void addLesson() {
-    	System.out.print("수업명을 입력해주세요 : ");
-    	String category = scanner.takeStr();
+    	String category;
+    	while (true) {
+    		System.out.print("수업명을 입력해주세요 : ");
+    		category = scanner.takeStr();
+    		if (category != "")
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요\n");
+    	}
     	
-    	System.out.print("선생님 이름을 입력해주세요 : ");
-    	String trainer = scanner.takeStr();
+    	String trainer;
+    	while (true) {
+    		System.out.print("선생님 이름을 입력해주세요 : ");
+    		trainer = scanner.takeStr();
+    		if (trainer != "")
+    			break ;
+    		System.out.println("🚨 올바른 값을 입력해주세요\n");    		
+    	}
     	
     	while (true) {
     		System.out.print("수업에 필요한 총 시간을 입력해주세요 : ");
-    		int time = scanner.takeInt(0, Integer.MAX_VALUE);
-    		if (time != -1) {
-    			if (dao.insert(new Lesson(0, trainer, category, time)))
-    				System.out.println("✔️ 등록 완료");
-    			else
-    				System.out.println("❌ 등록 실패");
-    			break ;
+    		Float time = 0f;
+    		try {
+    			time = Float.parseFloat(scanner.takeStr());    			
+    			if (time >= 0) {
+    				if (dao.insert(new Lesson(0, trainer, category, time)))
+    					System.out.println("✔️ 등록 완료");
+    				else
+    					System.out.println("❌ 등록 실패");
+    				break ;
+    			}
+    			System.out.println("🚨 올바른 값을 입력해주세요\n");    			
+    		} catch (Exception e) {
+    			System.out.println("🚨 올바른 값을 입력해주세요\n");    			
     		}
-    		System.out.println("🚨 올바른 값을 입력해주세요");
     	}    	
     }
 
@@ -49,7 +102,7 @@ public class LessonMenu {
     	}
     	
     	while (true) {
-    		System.out.print("삭제할 수업을 선택해주세요 : ");
+    		System.out.print("\n삭제할 수업을 선택해주세요 : ");
     		int num = scanner.takeInt(1, allLesson.size());
     		if (num != -1) {
     			if (dao.deleteById(allLesson.get(num - 1).getId()))
@@ -58,7 +111,7 @@ public class LessonMenu {
 					System.out.println("❌ 삭제 실패");
     			break ;
 			}
-    		System.out.println("🚨 올바른 값을 입력해주세요");
+    		System.out.println("🚨 올바른 값을 입력해주세요\n");
     	}
     }
     
