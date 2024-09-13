@@ -23,8 +23,7 @@ public class DebutMenu {
 
 		while (true) {
 
-			System.out
-					.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정   6. 뒤로 가기");
+			System.out.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정   6. 뒤로 가기");
 			int selectMenu = scanner.takeInt(1, 6);
 
 			if (selectMenu == -1) {
@@ -32,30 +31,31 @@ public class DebutMenu {
 				System.out.println("🚨 올바른 값을 입력해주세요");
 				continue;
 			}
+			
 			switch (selectMenu) {
-			case 1: {
-				readDebut();
-				break;
-			}
-			case 2: {
-				addDebut();
-				break;
-			}
-			case 3: {
-				deleteDebut();
-				break;
-			}
-			case 4: {
-				updateDebut();
-				break;
-			}
-			case 5: {
-				updateDebutMember();
-				break;
-			}
-			case 6: {
-				return;
-			}
+				case 1: {
+					readDebut();
+					break;
+				}
+				case 2: {
+					addDebut();
+					break;
+				}
+				case 3: {
+					deleteDebut();
+					break;
+				}
+				case 4: {
+					updateDebut();
+					break;
+				}
+				case 5: {
+					updateDebutMember();
+					break;
+				}
+				case 6: {
+					return;
+				}
 			}
 
 		}
@@ -121,8 +121,7 @@ public class DebutMenu {
 			System.out.println("데뷔 예정일을 YYYY-MM-DD의 형식으로 입력해주세요 : ");
 			String inputDate = scanner.takeStr();
 			Date debutDate = inputDate == "" ? null : Date.valueOf(inputDate);
-			if (debutDate.compareTo(Date.valueOf(LocalDate.now())) > 0) {
-			} else {
+			if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0) {
 				System.out.println("🚨 데뷔 예정일을 다시 입력해주세요!");
 				continue;
 			}
@@ -229,43 +228,43 @@ public class DebutMenu {
 		}
 
 		switch (picNo) {
-		case 1: { // 1. 등급 수정
-			String newGrade;
-			while (true) {
-				System.out.println("등급을 입력해주세요 : ");
-				newGrade = scanner.takeStr();
-				if (!newGrade.equals("")) {
-					break;
-				}
-				System.out.println("🚨 올바른 값을 입력해주세요");
-			}
-			selectedTeam.setGrade(newGrade);
-			debutDao.update(selectedTeam);
-			System.out.println("🆗 수정 완료!");
-			break;
-		}
-		case 2: { // 2. 데뷔 예정일 수정
-
-			while (true) {
-				System.out.println("데뷔 예정일을 YYYY-MM-DD의 형식으로 입력해주세요 : ");
-				String newDateInput = scanner.takeStr();
-
-				Date newDebutDate = newDateInput == "" ? null : Date.valueOf(newDateInput);
-
-				if (newDebutDate.compareTo(Date.valueOf(LocalDate.now())) > 0) {
-					selectedTeam.setDebutDate(newDebutDate);
-					if (debutDao.update(selectedTeam)) {
-						System.out.println("🆗 수정 완료!");
+			case 1: { // 1. 등급 수정
+				String newGrade;
+				while (true) {
+					System.out.println("등급을 입력해주세요 : ");
+					newGrade = scanner.takeStr();
+					if (!newGrade.equals("")) {
 						break;
-					} else {
-						System.out.println("⚠️ 수정 실패!");
 					}
-				} else {
-					System.out.println("🚨 데뷔 예정일을 다시 입력해주세요!");
+					System.out.println("🚨 올바른 값을 입력해주세요");
 				}
+				selectedTeam.setGrade(newGrade);
+				debutDao.update(selectedTeam);
+				System.out.println("🆗 수정 완료!");
+				break;
 			}
-			break;
-		}
+			case 2: { // 2. 데뷔 예정일 수정
+	
+				while (true) {
+					System.out.println("데뷔 예정일을 YYYY-MM-DD의 형식으로 입력해주세요 : ");
+					String newDateInput = scanner.takeStr();
+	
+					Date newDebutDate = newDateInput == "" ? null : Date.valueOf(newDateInput);
+	
+					if (newDebutDate.compareTo(Date.valueOf(LocalDate.now())) > 0) {
+						selectedTeam.setDebutDate(newDebutDate);
+						if (debutDao.update(selectedTeam)) {
+							System.out.println("🆗 수정 완료!");
+							break;
+						} else {
+							System.out.println("⚠️ 수정 실패!");
+						}
+					} else {
+						System.out.println("🚨 데뷔 예정일을 다시 입력해주세요!");
+					}
+				}
+				break;
+			}
 		}
 
 	}
