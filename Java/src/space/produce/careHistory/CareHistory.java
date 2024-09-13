@@ -71,8 +71,8 @@ public class CareHistory {
 	//4. toString 
 	@Override
 	public String toString() {
-		return "CareHistory [idx=" + idx + ", careDate=" + careDate + ", care=" + care + ", trainee=" + trainee
-				+ "]";
+		return "➤ 날짜: " + this.careDate + " ➤ 종류: " + this.care.getCategory() + " ➤ 연습생: " + this.trainee.getName();
+
 	}
 	
 }

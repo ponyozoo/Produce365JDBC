@@ -17,7 +17,11 @@ public class Trainee {
 	
 	public Trainee(int id) {
 		this.id = id;
-	}	
+	}
+	
+	public Trainee(String name) {
+		this.name = name;
+	}
 
 	public Trainee(int id, String name, Date birth, String sex, int height, int weight, String nationality,
 			Date hireDate) {

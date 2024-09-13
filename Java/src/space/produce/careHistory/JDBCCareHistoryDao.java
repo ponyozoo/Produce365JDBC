@@ -45,7 +45,7 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 		List<CareHistory> careHistories = new ArrayList<CareHistory>(); 
 		
 		try ( Connection connection = DataSource.getDataSource();
-	          PreparedStatement pStatement = connection.prepareStatement("SELECT IDX, CARE_DATE, CARE_ID, TRAINEE_ID FROM CARE_HISTORY ORDER BY IDX"); 
+	          PreparedStatement pStatement = connection.prepareStatement("SELECT H.IDX, H.CARE_DATE, C.CATEGORY, T.NAME FROM CARE_HISTORY H, CARE C, TRAINEE T WHERE H.CARE_ID = C.ID AND H.TRAINEE_ID = T.ID ORDER BY CARE_DATE"); 
 			  ResultSet rs = pStatement.executeQuery()) 
 		{
 		
@@ -53,8 +53,8 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 				CareHistory careHistory = new CareHistory();
 				careHistory.setIdx(rs.getInt("IDX"));
 				careHistory.setCareDate(rs.getDate("CARE_DATE"));
-				careHistory.setCare(new Care(rs.getInt("CARE_ID")));
-				careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
+				careHistory.setCare(new Care(rs.getString("CATEGORY")));
+				careHistory.setTrainee(new Trainee(rs.getString("NAME")));
 				
 				careHistories.add(careHistory); 
 			}
@@ -70,11 +70,9 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 	public List<CareHistory> selectByTraineeId(int id) {
 		
 		List<CareHistory> careHistories = new ArrayList<CareHistory>(); 
-		
-		String sql = ("SELECT IDX, CARE_DATE, CARE_ID, TRAINEE_ID FROM CARE_HISTORY WHERE TRAINEE_ID = ? ORDER BY IDX"); 
-		
+				
 		try ( Connection connection = DataSource.getDataSource();
-	          PreparedStatement pStatement = connection.prepareStatement(sql)){
+	          PreparedStatement pStatement = connection.prepareStatement("SELECT H.IDX, H.CARE_DATE, C.CATEGORY, T.NAME FROM CARE_HISTORY H, CARE C, TRAINEE T WHERE H.CARE_ID = C.ID AND H.TRAINEE_ID = T.ID AND H.TRAINEE_ID = ? ORDER BY CARE_DATE")){
 			  pStatement.setInt(1, id);
 			  ResultSet rs = pStatement.executeQuery();
 			  
@@ -83,8 +81,8 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 					
 					careHistory.setIdx(rs.getInt("IDX"));
 					careHistory.setCareDate(rs.getDate("CARE_DATE"));
-					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
-					careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
+					careHistory.setCare(new Care(rs.getString("CATEGORY")));
+					careHistory.setTrainee(new Trainee(rs.getString("NAME")));
 
 					careHistories.add(careHistory); 
 				}
@@ -100,11 +98,9 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 	public List<CareHistory> selectByCareId(int id) {
 		
 		List<CareHistory> careHistories = new ArrayList<CareHistory>(); 
-		
-		String sql = ("SELECT IDX, CARE_DATE, CARE_ID, TRAINEE_ID FROM CARE_HISTORY WHERE CARE_ID = ? ORDER BY IDX"); 
-		
+				
 		try ( Connection connection = DataSource.getDataSource();
-	          PreparedStatement pStatement = connection.prepareStatement(sql)){
+	          PreparedStatement pStatement = connection.prepareStatement("SELECT H.IDX, H.CARE_DATE, C.CATEGORY, T.NAME FROM CARE_HISTORY H, CARE C, TRAINEE T WHERE H.CARE_ID = C.ID AND H.TRAINEE_ID = T.ID AND H.CARE_ID = ? ORDER BY CARE_DATE")){
 			  pStatement.setInt(1, id);
 			  ResultSet rs = pStatement.executeQuery();
 			  
@@ -113,8 +109,8 @@ public class JDBCCareHistoryDao implements CareHistoryDAO {
 					
 					careHistory.setIdx(rs.getInt("IDX"));
 					careHistory.setCareDate(rs.getDate("CARE_DATE"));
-					careHistory.setCare(new Care(rs.getInt("CARE_ID")));
-					careHistory.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
+					careHistory.setCare(new Care(rs.getString("CATEGORY")));
+					careHistory.setTrainee(new Trainee(rs.getString("NAME")));
 
 					careHistories.add(careHistory); 
 				}

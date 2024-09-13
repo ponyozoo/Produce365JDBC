@@ -36,12 +36,12 @@ public class JDBCLessonHistoryDao implements LessonHistoryDAO {
 		List<LessonHistory> result = null;
 		
 		try (Connection conn = DataSource.getDataSource();
-				PreparedStatement pStatement = conn.prepareStatement("SELECT * FROM LESSON_HISTORY");
+				PreparedStatement pStatement = conn.prepareStatement("SELECT H.IDX, H.LESSON_DATE, L.SUBJECT, T.NAME FROM LESSON_HISTORY H, LESSON L, TRAINEE T WHERE H.LESSON_ID = L.ID AND H.TRAINEE_ID = T.ID ORDER BY LESSON_DATE");
 				ResultSet queryResult = pStatement.executeQuery()) {
 			result = new ArrayList<LessonHistory>();
 			while (queryResult.next()) {
 				result.add(new LessonHistory(queryResult.getInt("IDX"), queryResult.getDate("LESSON_DATE"), 
-						new Lesson(queryResult.getInt("LESSON_ID")), new Trainee(queryResult.getInt("TRAINEE_ID"))));
+						new Lesson(queryResult.getString("SUBJECT")), new Trainee(queryResult.getString("NAME"))));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -55,13 +55,13 @@ public class JDBCLessonHistoryDao implements LessonHistoryDAO {
 		List<LessonHistory> result = null;
 		
 		try (Connection conn = DataSource.getDataSource();
-				PreparedStatement pStatement = conn.prepareStatement("SELECT * FROM LESSON_HISTORY WHERE TRAINEE_ID = ?")) {
+				PreparedStatement pStatement = conn.prepareStatement("SELECT H.IDX, H.LESSON_DATE, L.SUBJECT, T.NAME FROM LESSON_HISTORY H, LESSON L, TRAINEE T WHERE H.LESSON_ID = L.ID AND H.TRAINEE_ID = T.ID AND H.TRAINEE_ID = ? ORDER BY LESSON_DATE")) {
 			pStatement.setInt(1, id);
 			ResultSet queryResult = pStatement.executeQuery();
 			result = new ArrayList<LessonHistory>();
 			while (queryResult.next()) {
 				result.add(new LessonHistory(queryResult.getInt("IDX"), queryResult.getDate("LESSON_DATE"), 
-						new Lesson(queryResult.getInt("LESSON_ID")), new Trainee(queryResult.getInt("TRAINEE_ID"))));
+						new Lesson(queryResult.getString("SUBJECT")), new Trainee(queryResult.getString("NAME"))));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -75,13 +75,13 @@ public class JDBCLessonHistoryDao implements LessonHistoryDAO {
 		List<LessonHistory> result = null;
 		
 		try (Connection conn = DataSource.getDataSource();
-				PreparedStatement pStatement = conn.prepareStatement("SELECT * FROM LESSON_HISTORY WHERE LESSON_ID = ?")) {
+				PreparedStatement pStatement = conn.prepareStatement("SELECT H.IDX, H.LESSON_DATE, L.SUBJECT, T.NAME FROM LESSON_HISTORY H, LESSON L, TRAINEE T WHERE H.LESSON_ID = L.ID AND H.TRAINEE_ID = T.ID AND H.LESSON_ID = ? ORDER BY LESSON_DATE")) {
 			pStatement.setInt(1, id);
 			ResultSet queryResult = pStatement.executeQuery();
 			result = new ArrayList<LessonHistory>();
 			while (queryResult.next()) {
 				result.add(new LessonHistory(queryResult.getInt("IDX"), queryResult.getDate("LESSON_DATE"), 
-						new Lesson(queryResult.getInt("LESSON_ID")), new Trainee(queryResult.getInt("TRAINEE_ID"))));
+						new Lesson(queryResult.getString("SUBJECT")), new Trainee(queryResult.getString("NAME"))));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
