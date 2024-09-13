@@ -19,7 +19,8 @@ public interface TraineeDao {
 
 	List<Trainee> selectByNationality(String Nationality);
 	
-	//List<Trainee> selectNoDebut();
+	List<Trainee> selectNoDebut();
+	
 	
 	
 }
