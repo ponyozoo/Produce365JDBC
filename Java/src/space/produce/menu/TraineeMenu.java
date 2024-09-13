@@ -16,10 +16,62 @@ public class TraineeMenu {
 	private JdbcTraineeDao traineeDao = new JdbcTraineeDao();
 	private JdbcRatingDao ratingDao = new JdbcRatingDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
+	private Util util = new Util();
+
+	public void selectTrainneeMenu() {
+
+		while (true) {
+			System.out.println(
+					"""
+
+							__________________________________________________🕺💃_______________________________________________
+
+							                                              [ 연습생 관리 ]
+
+							         1. 전체 조회   2. 성별 조회   3. 국적별 조회   4. 종합 등급별 조회   5. 데뷔조 여부에 따른 조회
+							____________________________________________________________________________________________________
+
+															""");
+			int selectMenu = scanner.takeInt(1, 5);
+
+			if (selectMenu == -1) {
+				System.out.println("🚨 올바른 값을 입력해주세요");
+				continue;
+			}
+
+			System.out.println("");
+
+			switch (selectMenu) {
+			case 1: {
+				readTraineeAll();
+				break;
+			}
+			case 2: {
+				readTraineeBySex();
+				break;
+			}
+			case 3: {
+				readTraineeByNationality();
+				break;
+			}
+			case 4: {
+				readTraineeByTodalGrade();
+				break;
+			}
+			case 5: {
+				readTraineeByDebut();
+				break;
+			}
+			case 6: {
+				return;
+			}
+
+			}
+		}
+
+	}
 
 	public void readTraineeAll() {
-		// JDBCTraineeDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
-		// 컬럼이 너무 많으므로 trainee 하나 당 id, name, sex, birth만 출력해주세요!
 
 		List<Trainee> trainees = traineeDao.selectAll();
 
@@ -33,9 +85,6 @@ public class TraineeMenu {
 	}
 
 	public void readTraineeBySex() {
-
-//		1.성별선택 (1번 남자 2번 여자)
-//		2.daoselectBySex받아온걸 출력
 
 		int sexChoice;
 		String sex;
@@ -70,10 +119,6 @@ public class TraineeMenu {
 
 	public void readTraineeByNationality() {
 
-//		1.국적선택 (종류에서 쿼리문 중복제거 distinct 후 받은 목록 출력 후 선택)
-//		중복제거 distinct->Dao에 생성(Menu에선 받아만 오게끔)
-//		2.daoselectByNationality받아온걸 출력
-
 		List<String> nationalities = traineeDao.selectDistinctNationality();
 
 		System.out.println("국적을 선택하세요:");
@@ -91,7 +136,8 @@ public class TraineeMenu {
 			if (nationalityChoice != -1) {
 				nationality = nationalities.get(nationalityChoice - 1);
 				break;
-			} System.out.println("🚨 올바른 값을 입력해주세요");
+			}
+			System.out.println("🚨 올바른 값을 입력해주세요");
 		}
 
 		List<Trainee> trainees = traineeDao.selectByNationality(nationality);
@@ -106,7 +152,6 @@ public class TraineeMenu {
 			}
 		}
 	}
-		
 
 	public void readTraineeByTodalGrade() {
 //		1.국적선택 (1~6번까지 A부터 F / )
@@ -122,13 +167,6 @@ public class TraineeMenu {
 	// 보류
 
 	public void addTrainee() {
-
-		// 사용자 입력으로 idx, name, birth, sex, height, weight, nationality, hire_date 받은 후
-		// 그 값으로 Trainee 객체 생성해서
-		// JDBCTraineeDAO.insert 호출하기
-		// true 반환 받으면 성공 메시지 출력
-
-		// 원래 idx는 난수를 생성해서 넣어줄건데 기존 trainee table에서 중복 확인이 필요하므로
 
 		System.out.println("이름을 입력하세요: ");
 		String name = scanner.takeStr();
@@ -151,12 +189,19 @@ public class TraineeMenu {
 		System.out.println("입사일 \"YYYY-MM-DD\"을 입력하세요: ");
 		String hireDate = scanner.takeStr();
 
-		Util util = new Util();
 		int random = util.generateRandomNumber();
+
+		int randomNo;
+		while (true) {
+			randomNo = util.generateRandomNumber();
+			Trainee trainees = traineeDao.selectById(randomNo);
+			if (trainees == null) {
+				break;
+			}
+		}
 
 		Date DateInput1 = Date.valueOf(birth);
 		Date DateInput2 = Date.valueOf(hireDate);
-
 		JdbcTraineeDao jdbcTraineeDao = new JdbcTraineeDao();
 		Trainee trainee = new Trainee();
 		trainee.setId(random);
@@ -168,28 +213,16 @@ public class TraineeMenu {
 		trainee.setNationality(nationality);
 		trainee.setHireDate(Date.valueOf(hireDate));
 
-		boolean inserts = traineeDao.insert(trainee);
-
-		if (inserts) {
+		if (traineeDao.insert(trainee)) {
 			System.out.println("연습생 등록 완료되었습니다.");
 		} else {
 			System.out.println("연습생 등록 실패했습니다.");
 		}
-
 	}
 
 	public void deleteTrainee() {
-		// JDBCTraineeDAO.selectAll으로 받아온 list 출력 후 (넘버링해서)
-		// 사용자가 선택한 번호의 연습생 id를 JDBCTraineeDAO.delete에 넘겨 호출
-		// true 반환 받으면 성공 메시지 출력
 
 		List<Trainee> trainees = traineeDao.selectAll();
-
-//		for (int i = 0; i < trainees.size(); i++) {
-//			Trainee trainee = trainees.get(i);
-//			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", (i + 1), trainee.getId(), trainee.getName(),
-//					trainee.getSex(), trainee.getBirth());
-//		}
 
 		for (int i = 0; i < trainees.size(); i++) {
 			System.out.println((i + 1) + "번: " + trainees.get(i));
@@ -303,13 +336,6 @@ public class TraineeMenu {
 		Trainee trainee = trainees.get(id1 - 1);
 
 		Rating rating = new Rating();
-
-//		for (Trainee trainee : trainees) {
-//			if (trainee.getId() == id) {
-//				selectedTrainee = trainee;
-//				break;
-//			}
-//		}
 
 		System.out.println("1. VOCAL  2. RAP  3. DANCE  4. TOTAL");
 		System.out.print("종목을 선택해 주세요: ");
