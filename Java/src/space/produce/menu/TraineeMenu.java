@@ -4,17 +4,19 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import space.produce.lesson.Lesson;
 import space.produce.rating.JdbcRatingDao;
 import space.produce.rating.Rating;
 import space.produce.trainee.JdbcTraineeDao;
 import space.produce.trainee.Trainee;
+import space.produce.util.MyScanner;
 import space.produce.util.Util;
 
 public class TraineeMenu {
 
 	private JdbcTraineeDao traineeDao = new JdbcTraineeDao();
-	private JdbcRatingDao raitingDao = new JdbcRatingDao();
-	private Scanner scanner = new Scanner(System.in);
+	private JdbcRatingDao ratingDao = new JdbcRatingDao();
+	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 
 	public void readTraineeAll() {
 		// JDBCTraineeDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
@@ -39,29 +41,27 @@ public class TraineeMenu {
 		// true 반환 받으면 성공 메시지 출력
 
 		// 원래 idx는 난수를 생성해서 넣어줄건데 기존 trainee table에서 중복 확인이 필요하므로
-		
+
 		System.out.println("이름을 입력하세요: ");
-		String name = scanner.nextLine();
+		String name = scanner.takeStr();
 
 		System.out.println("성별을 입력하세요: ");
-		String sex = scanner.nextLine();
+		String sex = scanner.takeStr();
 
 		System.out.println("생일 \"YYYY-MM-DD\"을 입력하세요: ");
-		String birth = scanner.nextLine();
+		String birth = scanner.takeStr();
 
 		System.out.println("키를 입력하세요: ");
-		int height = scanner.nextInt();
-		scanner.nextLine();
+		int height = scanner.takeInt(0, Integer.MAX_VALUE);
 
 		System.out.println("몸무게를 입력하세요: ");
-		int weight = scanner.nextInt();
-		scanner.nextLine();
+		int weight = scanner.takeInt(0, Integer.MAX_VALUE);
 
 		System.out.println("국적을 입력하세요: ");
-		String nationality = scanner.nextLine();
+		String nationality = scanner.takeStr();
 
 		System.out.println("입사일 \"YYYY-MM-DD\"을 입력하세요: ");
-		String hireDate = scanner.nextLine();
+		String hireDate = scanner.takeStr();
 
 		Util util = new Util();
 		int random = util.generateRandomNumber();
@@ -97,159 +97,141 @@ public class TraineeMenu {
 
 		List<Trainee> trainees = traineeDao.selectAll();
 
+//		for (int i = 0; i < trainees.size(); i++) {
+//			Trainee trainee = trainees.get(i);
+//			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", (i + 1), trainee.getId(), trainee.getName(),
+//					trainee.getSex(), trainee.getBirth());
+//		}
+
 		for (int i = 0; i < trainees.size(); i++) {
-			Trainee trainee = trainees.get(i);
-			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", trainee.getId(), trainee.getName(),
-					trainee.getSex(), trainee.getBirth());
+			System.out.println((i + 1) + "번: " + trainees.get(i));
 		}
 
-		System.out.print("삭제할 연습생의 사번을 입력하세요: ");
-		int id = scanner.nextInt();
+		System.out.print("삭제할 연습생을 입력하세요: ");
+		int id = scanner.takeInt(1, trainees.size());
 
-		boolean isDeleted = traineeDao.deleteById(id);
-
-		for (int i = 0; i < trainees.size(); i++) {
+		for (int i1 = 0; i1 < trainees.size(); i1++) {
 			System.out.println("----------------");
-			System.out.println(trainees.get(i).getId());
+			System.out.println(trainees.get(i1).getId());
 
-			if (trainees.get(i).getId() == id) {
-				trainees.remove(i);
-				System.out.println("😥연습생이 삭제되었습니다.");
-				return;
+			if (id != -1) {
+				if (traineeDao.deleteById(trainees.get(id - 1).getId()))
+					System.out.println("✔️ 삭제 완료");
+				else
+					System.out.println("❌ 삭제 실패");
+				break;
 			}
+			System.out.println("연습생을 찾을 수 없습니다.");
 		}
-		System.out.println("연습생을 찾을 수 없습니다.");
 	}
 
 	public void updateTrainee() {
 
-		// JDBCTraineeDAO.selectAll으로 받아온 list 출력 후 (넘버링해서)
-		// 사용자가 선택한 번호의 연습생을 수정할 것임
-		// 1. 이름 2. 키 3. 몸무게 4. 국적 출력해서
-		// 사용자가 선택한 번호와 입력 받은 값으로 해당 Trainee 객체 set 메소드로 수정
-		// JDBCTraineeDAO.update에 수정한 객체 넘겨서 호출
-		// true 반환 받으면 성공 메시지 출력
-
-		// 이해가 잘 안될까봐 밑에가 콘솔에 뜨는 순서입니당
-
-		// 전체 연습생 목록 출력 ...
-		// 연습생을 선택해주세요 :
-		// (사용자 값 입력 받기 - 숫자)
-		// 1. 이름 2. 키 3. 몸무게 4. 국적
-		// 수정할 정보를 선택해주세요 :
-		// (사용자 값 입력 받기 - 숫자)
-		// 수정할 값을 입력해주세요 :
-		// (사용자 값 입력 받기)
-		// 수정 완료 되었습니다!
-
 		List<Trainee> trainees = traineeDao.selectAll();
 
 		System.out.println("전체 연습생 목록");
+
 		for (int i = 0; i < trainees.size(); i++) {
-			Trainee trainee = trainees.get(i);
-			System.out.printf("%d번 사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", (i + 1), trainee.getId(),
-					trainee.getName(), trainee.getSex(), trainee.getBirth());
+			System.out.println((i + 1) + "번: " + trainees.get(i));
 		}
 
-		System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생의 사번 선택해 주세요");
-		int id = scanner.nextInt();
-		Trainee selectedTrainee = null;
+		int id = 0;
 
-		for (Trainee trainee : trainees) {
-			if (trainee.getId() == id) {
-				selectedTrainee = trainee;
+		while (true) {
+			System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생을 선택해 주세요");
+			id = scanner.takeInt(1, trainees.size());
+
+			if (id != -1) {
 				break;
 			}
+			System.out.println("🚨 올바른 값을 입력해주세요");
 		}
 
-		if (selectedTrainee == null) {
-			System.out.println("해당 사번의 연습생을 찾을 수 없습니다.");
-			return;
-		}
+		Trainee trainee = trainees.get(id - 1);
 
 		System.out.println("1. 이름  2. 키  3. 몸무게  4. 국적");
 		System.out.print("수정할 정보를 선택해 주세요: ");
-		int option = scanner.nextInt();
-		scanner.nextLine();
+		int option = scanner.takeInt(1, 4);
 
 		switch (option) {
 		case 1:
 			System.out.print("수정할 이름을 입력하세요: ");
-			String newName = scanner.nextLine();
-			selectedTrainee.setName(newName);
+			String newName = scanner.takeStr();
+			trainee.setName(newName);
 			break;
 		case 2:
 			System.out.print("수정할 키를 입력하세요: ");
-			int newHeight = scanner.nextInt();
-			selectedTrainee.setHeight(newHeight);
+			int newHeight = scanner.takeInt(0, Integer.MAX_VALUE);
+			trainee.setHeight(newHeight);
 			break;
 		case 3:
 			System.out.print("수정할 몸무게를 입력하세요: ");
-			int newWeight = scanner.nextInt();
-			selectedTrainee.setWeight(newWeight);
+			int newWeight = scanner.takeInt(0, Integer.MAX_VALUE);
+			trainee.setWeight(newWeight);
 			break;
 		case 4:
 			System.out.print("수정할 국적을 입력하세요: ");
-			String newNationality = scanner.nextLine();
-			selectedTrainee.setNationality(newNationality);
+			String newNationality = scanner.takeStr();
+			trainee.setNationality(newNationality);
 			break;
 		default:
 			System.out.println("잘못된 입력입니다.");
+
 			return;
 		}
 
-		boolean isUpdated = traineeDao.update(selectedTrainee);
+		boolean isUpdated = traineeDao.update(trainee);
 
 		if (isUpdated) {
 			System.out.println("✅ 수정 완료 되었습니다!");
 		} else {
 			System.out.println("🚨 수정에 실패했습니다.");
 		}
+
 	}
 
 	public void updateGrade() {
 
-//		전체출력
-//		ID받고
-//		종목별 선택 (넘버링) / rap, dance...
-//		값입력 a-f , String으로 받기 , A부터F 사이로 선택해 주세요
-//		메소드 호출
-//		DB연결
-
 		List<Trainee> trainees = traineeDao.selectAll();
 
 		System.out.println("전체 연습생 목록");
+
 		for (int i = 0; i < trainees.size(); i++) {
-			Trainee trainee = trainees.get(i);
-			System.out.printf("사번 : %d | 이름 : %s  | 성별 : %s | 생일 : %s\n", trainee.getId(), trainee.getName(),
-					trainee.getSex(), trainee.getBirth());
+			System.out.println((i + 1) + "번: " + trainees.get(i));
 		}
 
-		System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생의 사번 선택해 주세요");
-		int id = scanner.nextInt();
-		Trainee selectedTrainee = null;
-		Rating selectedRating = new Rating();
+		int id1 = 0;
 
-		for (Trainee trainee : trainees) {
-			if (trainee.getId() == id) {
-				selectedTrainee = trainee;
+		while (true) {
+			System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생을 선택해 주세요");
+			id1 = scanner.takeInt(1, trainees.size());
+
+			if (id1 != -1) {
 				break;
 			}
+			System.out.println("🚨 올바른 값을 입력해주세요");
 		}
 
-		if (selectedTrainee == null) {
-			System.out.println("해당 사번의 연습생을 찾을 수 없습니다.");
-			return;
-		}
+		Trainee trainee = trainees.get(id1 - 1);
+
+		Rating rating = new Rating();
+
+//		for (Trainee trainee : trainees) {
+//			if (trainee.getId() == id) {
+//				selectedTrainee = trainee;
+//				break;
+//			}
+//		}
 
 		System.out.println("1. VOCAL  2. RAP  3. DANCE  4. TOTAL");
 		System.out.print("종목을 선택해 주세요: ");
-		int option = scanner.nextInt();
-		scanner.nextLine();
+		int option = scanner.takeInt(1, 4);
+		;
+		scanner.takeStr();
 
 		System.out.print("A부터 F사이의 등급 중 선택해 주세요: ");
 
-		String grade = scanner.nextLine();
+		String grade = scanner.takeStr();
 
 		String subject = null;
 
@@ -268,15 +250,15 @@ public class TraineeMenu {
 			break;
 
 		default:
-			System.out.println("잘못된 선택입니다.");
+			System.out.println("🚨 올바른 값을 입력해주세요");
 			return;
 		}
 
-		selectedRating.setCategory(subject);
-		selectedRating.setGrade(grade);
-		selectedRating.setTrainee(selectedTrainee);
+		rating.setCategory(subject);
+		rating.setGrade(grade);
+		rating.setTrainee(trainee);
 
-		boolean isUpdated = raitingDao.update(selectedRating);
+		boolean isUpdated = ratingDao.update(rating);
 
 		if (isUpdated) {
 			System.out.println("" + subject + "를 " + grade + " 등급으로 업데이트 완료했습니다");
