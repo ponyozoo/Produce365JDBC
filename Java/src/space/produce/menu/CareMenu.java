@@ -14,6 +14,39 @@ public class CareMenu {
 	private CareDAO dao = new JDBCCareDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 	
+
+	public void selectCareMenu() {
+		while (true) {
+			System.out.println("메뉴를 선택해주세요 : 1. 연습생 케어 정보 조회 2. 연습생 케어 정보 추가 3. 연습생 케어 정보 삭제 4. 뒤로 가기");
+			int selectMenu = scanner.takeInt(1, 6);
+
+			if (selectMenu == -1) {
+				// -1을 반환하면= "올바른 값을 입력해주세요" 를 출력하고 switch문을 실행하지 않고 반복문을 재실행.
+				System.out.println("🚨 올바른 값을 입력해주세요");
+				continue;
+			}
+			switch (selectMenu) {
+				case 1: {
+					readCare();
+					break;
+				}
+				case 2: {
+					addCare();
+					break;
+				}
+				case 3: {
+					deleteCare();
+					break;
+				}
+				case 4: {
+					return;
+				}
+			}
+
+		}
+
+	}
+	
     public void readCare() {
         List<Care> cares = dao.selectAll(); 
        	 
