@@ -145,7 +145,7 @@ public class JdbcTraineeDao implements TraineeDao {
 
 		return selectedTrainee;
 	}
-	
+
 	@Override
 	public List<Trainee> selectBySex(String sex) {
 
@@ -215,6 +215,23 @@ public class JdbcTraineeDao implements TraineeDao {
 	}
 
 	@Override
+	public List<String> selectDistinctNationality() {
+		List<String> nationalites = new ArrayList<>();
+
+		try (Connection connection = DataSource.getDataSource();
+				PreparedStatement pStatement = connection.prepareStatement("SELECT DISTINCT NATIONALITY FROM TRAINEE");
+				ResultSet rs = pStatement.executeQuery()) {
+
+			while (rs.next())
+				nationalites.add(rs.getString("NATIONALITY"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return nationalites;
+	}
+
+	@Override
 	public List<Trainee> selectNoDebut() {
 		List<Trainee> traineesNoDebut = new ArrayList<>();
 
@@ -226,21 +243,15 @@ public class JdbcTraineeDao implements TraineeDao {
 				ResultSet rs = pStatement.executeQuery()) {
 
 			while (rs.next()) {
-				Trainee trainee = new Trainee(
-						rs.getInt("ID"), 
-						rs.getString("NAME"), 
-						rs.getDate("BIRTH"),
-						rs.getString("SEX"), 
-						rs.getInt("HEIGHT"), 
-						rs.getInt("WEIGHT"), 
-						rs.getString("NATIONALITY"),
+				Trainee trainee = new Trainee(rs.getInt("ID"), rs.getString("NAME"), rs.getDate("BIRTH"),
+						rs.getString("SEX"), rs.getInt("HEIGHT"), rs.getInt("WEIGHT"), rs.getString("NATIONALITY"),
 						rs.getDate("HIRE_DATE")
 
-						);
+				);
 
 				traineesNoDebut.add(trainee);
 			}
-			
+
 		} catch (SQLException e) {
 
 			e.printStackTrace();

@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import space.produce.lesson.Lesson;
 import space.produce.rating.JdbcRatingDao;
 import space.produce.rating.Rating;
 import space.produce.trainee.JdbcTraineeDao;
@@ -32,6 +31,95 @@ public class TraineeMenu {
 					trainee.getBirth());
 		}
 	}
+
+	public void readTraineeBySex() {
+
+//		1.성별선택 (1번 남자 2번 여자)
+//		2.daoselectBySex받아온걸 출력
+
+		int sexChoice;
+		String sex;
+
+		while (true) {
+			System.out.println("성별을 선택하세요: 1. 남성 / 2. 여성 ");
+			sexChoice = scanner.takeInt(1, 2);
+
+			if (sexChoice == 1) {
+				sex = "M";
+				break;
+			} else if (sexChoice == 2) {
+				sex = "F";
+				break;
+			} else {
+				System.out.println("🚨 올바른 값을 입력해주세요");
+			}
+		}
+
+		List<Trainee> trainees = traineeDao.selectBySex(sex);
+
+		if (trainees.isEmpty()) {
+			System.out.println("선택한 성별에 해당하는 연습생 없습니다.");
+		} else {
+			System.out.println("선택한 성별의 연습생: ");
+			for (Trainee trainee : trainees) {
+				System.out.println("ID: " + trainee.getId() + "/ " + "이름: " + trainee.getName() + "/ 생일: "
+						+ trainee.getBirth() + "/ " + "성별: " + trainee.getSex());
+			}
+		}
+	}
+
+	public void readTraineeByNationality() {
+
+//		1.국적선택 (종류에서 쿼리문 중복제거 distinct 후 받은 목록 출력 후 선택)
+//		중복제거 distinct->Dao에 생성(Menu에선 받아만 오게끔)
+//		2.daoselectByNationality받아온걸 출력
+
+		List<String> nationalities = traineeDao.selectDistinctNationality();
+
+		System.out.println("국적을 선택하세요:");
+		for (int i = 0; i < nationalities.size(); i++) {
+			System.out.println((i + 1) + "번: " + nationalities.get(i));
+		}
+
+		int nationalityChoice;
+		String nationality = null;
+
+		while (true) {
+
+			System.out.print("번호를 입력하세요: ");
+			nationalityChoice = scanner.takeInt(1, 3);
+			if (nationalityChoice != -1) {
+				nationality = nationalities.get(nationalityChoice - 1);
+				break;
+			} System.out.println("🚨 올바른 값을 입력해주세요");
+		}
+
+		List<Trainee> trainees = traineeDao.selectByNationality(nationality);
+
+		if (trainees.isEmpty()) {
+			System.out.println("선택한 국적에 해당하는 연습생이 없습니다.");
+		} else {
+			System.out.println("선택한 국적의 연습생:");
+			for (Trainee trainee : trainees) {
+				System.out.println("ID: " + trainee.getId() + " / 이름: " + trainee.getName() + " / 생일: "
+						+ trainee.getBirth() + " / 성별: " + trainee.getSex());
+			}
+		}
+	}
+		
+
+	public void readTraineeByTodalGrade() {
+//		1.국적선택 (1~6번까지 A부터 F / )
+//		중복제거 distinct->Dao에 생성(Menu에선 받아만 오게끔)
+//		2.daoselectByNationality받아온걸 출력
+	}
+	// 보류
+
+	public void readTraineeByDebut() {
+//		1.성별선택 (1번 남자 2번 여자)
+//		2.daoselectBySex받아온걸 출력
+	}
+	// 보류
 
 	public void addTrainee() {
 
