@@ -17,20 +17,32 @@ import space.produce.trainee.TraineeDao;
 import space.produce.util.MyScanner;
 
 public class DebutMenu {
+	private DebutDao debutDao = new JDBCDebutDao();
+	private DebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
+	private TraineeDao traineeDao = new JdbcTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 
 	public void selectDebutMenu() {
 
 		while (true) {
-
-			System.out.println("메뉴를 선택해주세요 : 1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정   6. 뒤로 가기");
+			System.out.println("""
+					
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                              [ 데뷔조 관리 ]
+			
+			         1. 데뷔조 조회   2. 데뷔조 추가   3. 데뷔조 삭제   4. 데뷔조 정보 수정   5. 데뷔조 멤버 수정   6. 뒤로 가기                 
+			_______________________________________________________________________________________________________
+					                
+			""");
 			int selectMenu = scanner.takeInt(1, 6);
 
 			if (selectMenu == -1) {
-				// -1을 반환하면= "올바른 값을 입력해주세요" 를 출력하고 switch문을 실행하지 않고 반복문을 재실행.
 				System.out.println("🚨 올바른 값을 입력해주세요");
 				continue;
 			}
+			
+			System.out.println("");
 			
 			switch (selectMenu) {
 				case 1: {
@@ -57,350 +69,355 @@ public class DebutMenu {
 					return;
 				}
 			}
-
 		}
-
+		
 	}
 
 	public void readDebut() {
-		// JDBCDebutDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
-		DebutDao debutDao = new JDBCDebutDao();
 		List<Debut> debutList = debutDao.findAll();
 
-		// 변수로 i를 받고 i는 debutList의 크기보다는 작고, for문이 한 번 돌아갈때마다 값이 하나씩 커진다.
-		// 1. i+1를 출력.(i는 0부터 시작하므로)
-		// 2. i옆에 selectAll 구문을 이용하여 받아온 리스트를 한 줄씩 출력.
 		for (int i = 0; i < debutList.size(); i++) {
-			System.out.println((i + 1) + ": " + debutList.get(i));
+			System.out.println((i + 1) + ". " + debutList.get(i));
+		}
+		
+		int selectedNum = 0;
+		while (true) {
+			System.out.print("\n멤버를 확인할 데뷔조를 선택해주세요 : ");
+			selectedNum = scanner.takeInt(1, debutList.size());
+			if (selectedNum != -1) {
+				break;
+			}
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
+		
+		List<DebutMember> memberList = debutMemberDao.selectByGroup(debutList.get(selectedNum - 1).getId());
+		
+		System.out.println("");
+		
+		for (int i = 0; i < memberList.size(); i++) {
+			System.out.println(memberList.get(i).getTrainee());
 		}
 	}
 
 	public void addDebut() {
-		// 사용자 입력으로 name, member_count, concept, grade, debut_date 받은 후
-		System.out.println("그룹명 입력 : ");
 		String name;
 		while (true) {
+			System.out.print("그룹명 입력을 입력해주세요 : ");
 			name = scanner.takeStr();
 			if (!name.equals("")) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
-		System.out.println("인원 수 입력 : ");
 		int memberCount = 0;
 		while (true) {
+			System.out.print("인원 수를 입력해주세요 : ");
 			memberCount = scanner.takeInt(1, Integer.MAX_VALUE);
 			if (memberCount != -1) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
-		System.out.println("콘셉트 입력 : ");
 		String concept;
 		while (true) {
+			System.out.print("컨셉을 입력해주세요 : ");
 			concept = scanner.takeStr();
 			if (!concept.equals("")) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
-		System.out.println("종합 평가 점수 입력 : ");
 		String grade;
 		while (true) {
+			System.out.print("종합 평가 등급을 입력해주세요 (A~F) : ");
 			grade = scanner.takeStr();
+			//등급 비교 메소드 만들기
 			if (!grade.equals("")) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
+		Date debutDate = null;
 		while (true) {
-			System.out.println("데뷔 예정일을 YYYY-MM-DD의 형식으로 입력해주세요 : ");
+			System.out.print("데뷔 예정일을 입력해주세요 (오늘 이후의 날짜만 가능합니다) : ");
 			String inputDate = scanner.takeStr();
-			Date debutDate = inputDate == "" ? null : Date.valueOf(inputDate);
-			if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0) {
-				System.out.println("🚨 데뷔 예정일을 다시 입력해주세요!");
-				continue;
+			try {
+				debutDate = Date.valueOf(inputDate);
+				if (debutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0)
+					throw new Exception();
+				break;
+			} catch (Exception e) {
+				System.out.println("🚨 올바른 값을 입력해주세요 (날짜는 YYYY-MM-DD 형식입니다)\n");				
 			}
-			
-			Debut debut = new Debut();
-			debut.setName(name);
-			debut.setMemberCount(memberCount);
-			debut.setConcept(concept);
-			debut.setGrade(grade);
-			debut.setDebutDate(debutDate);
-
-			DebutDao debutDao = new JDBCDebutDao();
-			// insert의 반환값이 true면
-
-			if (debutDao.insert(debut) == true) {
-				System.out.println("🆗 데뷔조 생성 완료!");
-			} else {
-				System.out.println("⚠️ 데뷔조 생성 실패!");
-			}
-			break;
 		}
+			
+		Debut debut = new Debut();
+		debut.setName(name);
+		debut.setMemberCount(memberCount);
+		debut.setConcept(concept);
+		debut.setGrade(grade);
+		debut.setDebutDate(debutDate);
 
+		if (debutDao.insert(debut) == true)
+			System.out.println("✔️ 추가 완료");
+		else
+			System.out.println("❌ 추가 실패");
 	}
 
-	// 실패면, "입력에 실패하였습니다." 출력.
-
-	// 그 값으로 Debut 객체 생성해서
-	// JDBCDebutDAO.insert 호출하기
-	// true 반환 받으면 성공 메시지 출력
-
-	// debut_date가 오늘 이후인지 한 번 체크하고 아니라면 입력 다시 받기 기능이 있어야 하는데
-	// 요부분 살짝 까다로워서 하실 수 있으면 해주시고 아니면 그냥 값 받은대로 넣어주세요!
-
 	public void deleteDebut() {
-		// JDBCDebutDAO.selectAll으로 받아온 list 출력 후 (넘버링해서)
-		DebutMenu debutMenu = new DebutMenu();
-		DebutDao debutDao = new JDBCDebutDao();
 		List<Debut> debutList = debutDao.findAll();
+		
 		for (int i = 0; i < debutList.size(); i++) {
-			System.out.println((i + 1) + ": " + debutList.get(i));
+			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		// 사용자가 선택한 번호의 데뷔조를 JDBCTraineeDAO.delete에 넘겨 호출
 		int pickIndex = 0;
 		while (true) {
-			System.out.println("✅ 삭제할 데뷔조를 선택해주세요 : ");
+			System.out.print("\n삭제할 데뷔조를 선택해주세요 : ");
 			pickIndex = scanner.takeInt(1, debutList.size());
 			if (pickIndex != -1)
 				break;
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
 		int pickId = debutList.get(pickIndex - 1).getId();
 
 		int pickDel = 0;
 		while (true) {
-			System.out.println("⚠️ 해당 팀을 정말로 삭제하시겠습니까? : 1.예  2.아니오");
+			System.out.print("⚠️ 해당 팀을 정말로 삭제하시겠습니까?\n1.예  2.아니오 : ");
 			pickDel = scanner.takeInt(1, 2);
 
 			if (pickDel == 1) {
-				debutDao.deleteById(pickId);
-				// true 반환 받으면 성공 메시지 출력
-				System.out.println("🆗 삭제 완료!");
+				if (debutDao.deleteById(pickId))
+					System.out.println("✔️ 삭제 완료");
+				else
+					System.out.println("❌ 추가 실패");					
+				break;
 			} else if (pickDel == 2) {
-				deleteDebut();
+				System.out.println("📢 이전 메뉴로 돌아갑니다");
+				break ;
 			} else {
-				System.out.println("🚨 잘못된 입력입니다.");
-				deleteDebut();
+				System.out.println("🚨 올바른 값을 입력해주세요\n");
 			}
-			break;
 		}
 	}
 
 	public void updateDebut() {
-		// JDBCDebutDAO.selectAll으로 받아온 list 출력 후 (넘버링해서)
-		DebutMenu debutMenu = new DebutMenu();
-		DebutDao debutDao = new JDBCDebutDao();
+		int picNo = 0;
+		while (true) {
+			System.out.println("""
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                            [ 데뷔조 정보 수정 ]
+			
+			                                1. 등급 수정   2. 데뷔 예정일 수정   3. 뒤로 가기                 
+			_______________________________________________________________________________________________________
+					                
+			""");
+			picNo = scanner.takeInt(1, 3);
+			
+			if (picNo != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
+		
+		if (picNo == 3)
+			return ;
+		
+		System.out.println("");
+		
 		List<Debut> debutList = debutDao.findAll();
 
 		for (int i = 0; i < debutList.size(); i++) {
-			System.out.println((i + 1) + ": " + debutList.get(i));
+			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		// 사용자가 선택한 번호의 데뷔조를 수정할 것임
 		int pickIndex = 0;
 		while (true) {
-			System.out.println("✅ 수정할 데뷔조를 선택해주세요 : ");
+			System.out.print("\n수정할 데뷔조를 선택해주세요 : ");
 			pickIndex = scanner.takeInt(1, debutList.size());
 			if (pickIndex != -1)
 				break;
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
-		// 고객이 입력한 인덱스의 데뷔조를 리스트에서 선택
 		Debut selectedTeam = debutList.get(pickIndex - 1);
 
-		int picNo = 0;
-		while (true) {
-			System.out.println("✅ 수정할 항목을 선택해주세요 : 1. 등급 수정   2. 데뷔 예정일 수정  3. 뒤로 가기");
-			picNo = scanner.takeInt(1, 3);
-			if (picNo != -1)
-				break;
-			System.out.println("🚨 올바른 값을 입력해주세요");
-		}
-
 		switch (picNo) {
-			case 1: { // 1. 등급 수정
+			case 1: { 
 				String newGrade;
 				while (true) {
-					System.out.println("등급을 입력해주세요 : ");
+					System.out.print("등급을 입력해주세요 (A~F): ");
+					//등급비교메소드만들기
 					newGrade = scanner.takeStr();
 					if (!newGrade.equals("")) {
 						break;
 					}
-					System.out.println("🚨 올바른 값을 입력해주세요");
+					System.out.println("🚨 올바른 값을 입력해주세요\n");
 				}
+				
 				selectedTeam.setGrade(newGrade);
-				debutDao.update(selectedTeam);
-				System.out.println("🆗 수정 완료!");
+				
+				if (debutDao.update(selectedTeam)) {
+					System.out.println("✔️ 수정 완료");
+				} else {
+					System.out.println("❌ 수정 실패");
+				}
+				
 				break;
 			}
-			case 2: { // 2. 데뷔 예정일 수정
-	
+			case 2: {
 				while (true) {
-					System.out.println("데뷔 예정일을 YYYY-MM-DD의 형식으로 입력해주세요 : ");
+					System.out.print("데뷔 예정일을 입력해주세요 : ");
 					String newDateInput = scanner.takeStr();
-	
-					Date newDebutDate = newDateInput == "" ? null : Date.valueOf(newDateInput);
-	
-					if (newDebutDate.compareTo(Date.valueOf(LocalDate.now())) > 0) {
+					Date newDebutDate = null;
+					
+					try {
+						newDebutDate = Date.valueOf(newDateInput);
+						if (newDebutDate.compareTo(Date.valueOf(LocalDate.now())) <= 0)
+							throw new Exception();
 						selectedTeam.setDebutDate(newDebutDate);
-						if (debutDao.update(selectedTeam)) {
-							System.out.println("🆗 수정 완료!");
-							break;
-						} else {
-							System.out.println("⚠️ 수정 실패!");
-						}
-					} else {
-						System.out.println("🚨 데뷔 예정일을 다시 입력해주세요!");
+						break ;
+					} catch (Exception e) {
+						System.out.println("🚨 올바른 값을 입력해주세요 (날짜는 YYYY-MM-DD 형식입니다)\n");				
 					}
+				}
+				
+				if (debutDao.update(selectedTeam)) {
+					System.out.println("✔️ 수정 완료");
+				} else {
+					System.out.println("❌ 수정 실패");
 				}
 				break;
 			}
 		}
-
 	}
 
 	public void updateDebutMember() {
-		/*
-		 * 0. 멤버 추가인지 삭제인지 선택. 1. 멤버 추가 1-1. 데뷔조목록 출력 1-2. index로 멤버 추가 혹은 삭제해줄 데뷔조
-		 * select. 1-3. 추가 선택시, sql문으로 데뷔조에 포함 안 된 연습생목록 출력 1-4. index로 select하고 get ID
-		 * 1-5. 변수에 get한 ID넣어 데뷔조 insert메소드 실행.
-		 * 
-		 * 2. 멤버 삭제 2-1 삭제 선택시, sql문으로 데뷔멤버 테이블에 있는 연습생목록 출력 2-2. index로 select 2-3.
-		 * delete메소드 실행.
-		 */
-
-		// 0.멤버 추가인지 삭제인지 선택.
-
 		int selectMenu = 0;
 		while (true) {
-			System.out.println("✅ 수정할 데뷔조 멤버 설정을 선택해주세요 : 1.데뷔조 멤버 추가  2. 데뷔조 멤버 삭제 3. 뒤로 가기");
+			System.out.println("""
+			__________________________________________________🕺💃_________________________________________________
+			
+			                                            [ 데뷔조 멤버 수정 ]
+			
+			                              1. 데뷔조 멤버 추가   2. 데뷔조 멤버 삭제   3. 뒤로 가기                 
+			_______________________________________________________________________________________________________
+					                
+			""");
 			selectMenu = scanner.takeInt(1, 3);
-			if (selectMenu != -1) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			
+			if (selectMenu != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
-
-		// 1-1. 데뷔조목록 출력
-		DebutDao debutDao = new JDBCDebutDao();
+		
+		if (selectMenu == 3)
+			return ;
+		
+		System.out.println("");
+		
 		List<Debut> debutList = debutDao.findAll();
 		for (int i = 0; i < debutList.size(); i++) {
-			System.out.println((i + 1) + ": " + debutList.get(i));
+			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		// 1-2. 수정할 데뷔조 선택
 		int selectTeam = 0;
 		while (true) {
-			System.out.println("✅ 데뷔조를 선택해주세요 : ");
+			System.out.print("\n데뷔조를 선택해주세요 : ");
 			selectTeam = scanner.takeInt(1, debutList.size());
 			if (selectTeam != -1) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 		Debut pickTeam = debutList.get(selectTeam - 1);
 
-		if (selectMenu == 1) {// 2. 멤버 추가
-
-			// 2-1. sql문으로 데뷔조에 포함 안 된 연습생목록 출력
-			TraineeDao traineeDao = new JdbcTraineeDao();
+		if (selectMenu == 1) {
+			System.out.println("");
+			
 			List<Trainee> traineeNoDebutList = traineeDao.selectNoDebut();
 			for (int i = 0; i < traineeNoDebutList.size(); i++) {
-				System.out.println((i + 1) + ": " + traineeNoDebutList.get(i));
+				System.out.println((i + 1) + ". " + traineeNoDebutList.get(i));
 			}
 
-			System.out.println("✅ 데뷔조에 추가할 연습생을 선택해주세요 : ");
+			System.out.print("\n데뷔조에 추가할 연습생을 선택해주세요 : ");
 
-			// 2-2. index로 select하고 get debutMember 객체
 			int pickTrIndex = 0;
 			while (true) {
 				pickTrIndex = scanner.takeInt(1, traineeNoDebutList.size());
 				if (pickTrIndex != -1) {
 					break;
 				}
-				System.out.println("🚨 올바른 값을 입력해주세요");
+				System.out.println("🚨 올바른 값을 입력해주세요\n");
 			}
+			
 			Trainee pickTrainee = traineeNoDebutList.get(pickTrIndex - 1);
 			DebutMember newDebutMember = new DebutMember();
 			newDebutMember.setGroup(pickTeam);
 			newDebutMember.setTrainee(pickTrainee);
 
-			// 2-3. 변수에 get한 DebutMember 객체넣어 데뷔조 insert메소드 실행
 			int putDebut = 0;
 			while (true) {
-				System.out.println("✅ 해당 인물을 데뷔조에 넣으시겠습니까? : 1. 예   2. 아니오 ");
+				System.out.print("\n⚠️ 해당 인물을 데뷔조에 넣으시겠습니까?\n1. 예   2. 아니오 : ");
 				putDebut = scanner.takeInt(1, 2);
 				if (putDebut != -1) {
 					break;
 				}
-				System.out.println("🚨 잘못된 입력입니다.");
+				System.out.println("🚨 올바른 값을 입력해주세요\\n");
 			}
+			
 			if (putDebut == 1) {
-				DebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
 				if (debutMemberDao.insert(newDebutMember)) {
-					System.out.println("🆗 추가 완료!");
+					System.out.println("✔️ 수정 완료");
 				} else {
-					System.out.println("⚠️ 추가 실패!");
+					System.out.println("❌ 수정 실패");
 				}
-
 			} else if (putDebut == 2) {
-				return;
+				System.out.println("📢 이전 메뉴로 돌아갑니다");
+				return ;
 			}
+		} else if (selectMenu == 2) {
+			System.out.println("");
 
-		} else if (selectMenu == 2) {// 3.멤버 삭제
-
-			// 3-1 sql문으로 데뷔멤버 테이블에 있는 연습생목록 출력
-			DebutMemberDao DebutMemberDao = new JDBCDebutMemberDao();
-			List<DebutMember> debutMembers = DebutMemberDao.selectByGroup(pickTeam.getId());
+			List<DebutMember> debutMembers = debutMemberDao.selectByGroup(pickTeam.getId());
 			for (int i = 0; i < debutMembers.size(); i++) {
-				System.out.println((i + 1) + ": " + debutMembers.get(i));
+				System.out.println((i + 1) + ". " + debutMembers.get(i).getTrainee());
 			}
 
-			// 3-2. index로 삭제할 연습생 select
 			int pickTrIndex = 0;
 			while (true) {
-				System.out.println("데뷔조에서 삭제할 연습생을 선택해주세요 : ");
+				System.out.print("\n데뷔조에서 삭제할 연습생을 선택해주세요 : ");
 				pickTrIndex = scanner.takeInt(1, debutMembers.size());
 				if (selectTeam != -1) {
 					break;
 				}
-				System.out.println("🚨 올바른 값을 입력해주세요");
+				System.out.println("🚨 올바른 값을 입력해주세요\n");
 			}
-
-			// 3-3. 선택한 index의 연습생 객체의 idx를 변수로 넣어 deleteById 메소드 실행
-			DebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
 
 			int outDebut = 0;
 			while (true) {
-				System.out.println("✅ 해당 인물을 정말 데뷔조에서 삭제하시겠습니까? : 1. 예   2. 아니오 ");
+				System.out.print("\n⚠️ 해당 인물을 정말 데뷔조에서 삭제하시겠습니까?\n1. 예   2. 아니오 : ");
 				outDebut = scanner.takeInt(1, 2);
 				if (outDebut != -1) {
 					break;
 				}
-				System.out.println("🚨 잘못된 입력입니다.");
+				System.out.println("🚨 잘못된 입력입니다.\n");
 			}
 
 			if (outDebut == 1) {
 				if (debutMemberDao.deleteById(debutMembers.get(pickTrIndex - 1).getIdx())) {
-					System.out.println("🆗 삭제 완료!");
+					System.out.println("✔️ 수정 완료");
 				} else {
-					System.out.println("⚠️ 삭제 실패!");
-				}
+					System.out.println("❌ 수정 실패");
+				} 
 			} else if (outDebut == 2) {
-				return;
+				System.out.println("📢 이전 메뉴로 돌아갑니다");
 			}
 		}
-
 	}
-
 }

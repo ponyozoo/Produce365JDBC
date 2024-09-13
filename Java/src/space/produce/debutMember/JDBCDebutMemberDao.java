@@ -91,10 +91,10 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 	public List<DebutMember> selectByGroup(int groupId) {
 		List<DebutMember> debutMembers = new ArrayList<DebutMember>();
 		
-		
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement 
 				= connection.prepareStatement("SELECT D.ID"
+						+ "		, M.IDX"
 						+ "     , D.NAME AS GROUP_NAME"
 						+ "     , D.DEBUT_DATE"
 						+ "     , M.TRAINEE_ID"
@@ -111,19 +111,19 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 						+ "  ORDER BY M.TRAINEE_ID");
 				){
 		
-			//select하는데 필요한 debutMember 의 groupId, debut의 id를 가져다가 pStatement안의 쿼리문 속 첫번째 ?에 넣어야 함..
 			pStatement.setInt(1, groupId);
 			ResultSet rs = pStatement.executeQuery();
 			
 			while(rs.next()) {
-				Debut debut = new Debut();
 				DebutMember debutMember = new DebutMember();
+				Debut debut = new Debut();
 				Trainee trainee = new Trainee();
+				
+				debutMember.setIdx(rs.getInt("IDX"));
 				
 				debut.setId(rs.getInt("ID"));
 				debut.setName(rs.getString("GROUP_NAME"));
 				debut.setDebutDate(rs.getDate("DEBUT_DATE"));
-				
 				debutMember.setGroup(debut);
 				
 				trainee.setId(rs.getInt("TRAINEE_ID"));
@@ -134,13 +134,11 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 				trainee.setWeight(rs.getInt("WEIGHT"));
 				trainee.setNationality(rs.getString("NATIONALITY"));
 				trainee.setHireDate(rs.getDate("HIRE_DATE"));
-				
 				debutMember.setTrainee(trainee);
+				
 				debutMembers.add(debutMember);		
 			}
-
 		} catch (SQLException e) {
-			
 			e.printStackTrace();
 		}
 		return debutMembers;
