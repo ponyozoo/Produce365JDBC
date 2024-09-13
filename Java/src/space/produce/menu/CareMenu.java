@@ -18,7 +18,7 @@ public class CareMenu {
 	public void selectCareMenu() {
 		while (true) {
 			System.out.println("메뉴를 선택해주세요 : 1. 연습생 케어 정보 조회 2. 연습생 케어 정보 추가 3. 연습생 케어 정보 삭제 4. 뒤로 가기");
-			int selectMenu = scanner.takeInt(1, 6);
+			int selectMenu = scanner.takeInt(1, 4);
 
 			if (selectMenu == -1) {
 				// -1을 반환하면= "올바른 값을 입력해주세요" 를 출력하고 switch문을 실행하지 않고 반복문을 재실행.

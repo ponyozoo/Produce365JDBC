@@ -30,10 +30,10 @@ public class HistoryMenu {
 	private TraineeDao traineeDao = new JdbcTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 	
-	public void selectCareHistoryMenu() {
+	public void selectHistoryMenu() {
 		while (true) {
 			System.out.println("메뉴를 선택해주세요 : 1. 케어 기록 정보 조회 2. 연습생 수업 정보 조회 3. 케어 기록 정보 추가 4. 수업 기록 정보 추가 5. 뒤로 가기");
-			int selectMenu = scanner.takeInt(1, 6);
+			int selectMenu = scanner.takeInt(1, 5);
 
 			if (selectMenu == -1) {
 				// -1을 반환하면= "올바른 값을 입력해주세요" 를 출력하고 switch문을 실행하지 않고 반복문을 재실행.
