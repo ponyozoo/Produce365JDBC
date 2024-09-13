@@ -51,8 +51,7 @@ public class Care {
 	public Care(int id) {
 		this.id = id; 
 	}
-	
-	
+
 	//4. toString
 	@Override
 	public String toString() {

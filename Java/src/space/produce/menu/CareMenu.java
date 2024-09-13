@@ -6,69 +6,62 @@ import java.util.Scanner;
 import space.produce.care.Care;
 import space.produce.care.CareDAO;
 import space.produce.care.JDBCCareDao;
+import space.produce.lesson.Lesson;
+import space.produce.util.MyScanner;
 
 public class CareMenu {
-
+	
+	private CareDAO dao = new JDBCCareDao();
+	private MyScanner scanner = new MyScanner(new Scanner(System.in));
+	
     public void readCare() {
-        // JDBCCareDAO.selectAll 사용해서 받아온 list 한 줄씩 출력
-    	CareDAO careDao = new JDBCCareDao(); 
-       	
-       	List<Care> cares = careDao.selectAll(); 
+        List<Care> cares = dao.selectAll(); 
        	 
        	for ( int i = 0; i < cares.size(); i++ ) {
        		System.out.println((i+1) + "번: " + cares.get(i) );
        	}
     }
 
-    public boolean addCare() {
-    	
-    	JDBCCareDao jdbcCareDao = new JDBCCareDao();
-    	Care care = new Care(); 
-    	Scanner sc = new Scanner(System.in);
-    	
+    public void addCare() {
     	System.out.println("종류를 입력하세요 : ");
-    	care.setCategory(sc.nextLine());
+    	String category = scanner.takeStr();
     	
-    	System.out.println("금액을 입력하세요 : ");
-    	care.setCost(sc.nextInt());
-    	
-    	boolean rslt = jdbcCareDao.insert(care);
-    	
-    	if ( rslt ) {
-    		System.out.println("CARE 정보가 등록되었습니다.");
-    	} else {
-    		System.out.println("CARE 정보가 등록되지 않았습니다.");
+    	while (true) {
+    		System.out.println("금액을 입력하세요 : ");
+    		int cost = scanner.takeInt(0, Integer.MAX_VALUE);
+    		
+    		if (cost != -1) {
+    			if ( dao.insert(new Care(0, category, cost)) ) {
+    				System.out.println("✔️ 등록 완료");
+    			} else {
+    				System.out.println("❌ 등록 실패");
+    			}
+    			break;
+    		} 
+    		System.out.println("🚨 올바른 값을 입력해주세요");
     	}
-    	
-    	sc.close();
-    	
-    	return rslt; 
     }
 
-    public boolean deleteCare() {
-    	JDBCCareDao jdbcCareDao = new JDBCCareDao();
-    	CareDAO careDao = new JDBCCareDao(); 
-    	Scanner sc = new Scanner(System.in);
+    public void deleteCare() {
     	
-    	readCare();
+    	List<Care> cares = dao.selectAll();
     	
-      	System.out.println("삭제하고 싶은 번호를 입력해주세요.");
-      	int num = sc.nextInt();
-      	
-      	List<Care> cares = careDao.selectAll(); 
-      	
-      	int pickId = cares.get(num-1).getId();
-      	
-    	boolean rslt = jdbcCareDao.deleteById(pickId);
-      	
-      	if ( rslt ) {
-    		System.out.println(num+"번 정보가 삭제되었습니다.");
-    	} else {
-    		System.out.println("CARE 정보가 삭제되지 않았습니다.");
+    	for (int i = 0; i < cares.size(); i++) {
+    		System.out.println((i + 1) + ". " + cares.get(i));
     	}
     	
-      	sc.close();
-      	
-    	return rslt;	
+    	while (true) {
+    		System.out.println("삭제하고 싶은 CARE 번호를 입력해주세요.");
+    		int num = scanner.takeInt(1, cares.size());
+    		if (num != -1) {
+    			if (dao.deleteById(cares.get(num -1).getId())) {
+    				System.out.println("✔️ 삭제 완료");
+    			} else {
+    				System.out.println("❌ 삭제 실패");
+    			}
+    			break;
+    		}
+    		System.out.println("🚨 올바른 값을 입력해주세요");	
+    	}
     }
 }
