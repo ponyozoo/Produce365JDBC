@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import space.produce.debutMember.DebutMember;
+import space.produce.debutMember.JDBCDebutMemberDao;
 import space.produce.rating.JdbcRatingDao;
 import space.produce.rating.Rating;
 import space.produce.trainee.JdbcTraineeDao;
@@ -15,6 +17,7 @@ public class TraineeMenu {
 
 	private JdbcTraineeDao traineeDao = new JdbcTraineeDao();
 	private JdbcRatingDao ratingDao = new JdbcRatingDao();
+	private JDBCDebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 	private Util util = new Util();
 
@@ -154,17 +157,61 @@ public class TraineeMenu {
 	}
 
 	public void readTraineeByTodalGrade() {
-//		1.국적선택 (1~6번까지 A부터 F / )
-//		중복제거 distinct->Dao에 생성(Menu에선 받아만 오게끔)
-//		2.daoselectByNationality받아온걸 출력
+		String grade = "";
+		while (true) {
+			System.out.print("A부터 F 사이의 등급을 입력해주세요 : ");
+			grade = util.checkGrade(scanner.takeStr());
+			if (!grade.equals("")) {
+				break;
+			}
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
+
+		System.out.println("");
+
+		List<Rating> totalGrade = ratingDao.selectByTotalGrade(grade);
+
+		if (totalGrade.isEmpty()) {
+			System.out.println("📢 해당 등급의 연습생이 없습니다");
+			return;
+		}
+
+		for (Rating rating : totalGrade) {
+			System.out.println("➤ 등급: " + rating.getGrade() + " ➤ 사번: " + rating.getTrainee().getId() + " ➤ 이름: "
+					+ rating.getTrainee().getName() + " ➤ 생년월일: " + rating.getTrainee().getBirth() + " ➤ 성별: "
+					+ rating.getTrainee().getSex());
+		}
 	}
-	// 보류
 
 	public void readTraineeByDebut() {
-//		1.성별선택 (1번 남자 2번 여자)
-//		2.daoselectBySex받아온걸 출력
+		int selectedNum = 0;
+		while (true) {
+			System.out.print("✅ 확인할 연습생 분류를 선택해주세요\n1. 데뷔조 연습생  2. 비데뷔조 연습생 : ");
+			selectedNum = scanner.takeInt(1, 2);
+			if (selectedNum != -1)
+				break;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
+
+		System.out.println("");
+
+		if (selectedNum == 1) {
+			List<DebutMember> debutMembers = debutMemberDao.selectAll();
+
+			for (DebutMember member : debutMembers) {
+				System.out.println("➤ 데뷔조명: " + member.getGroup().getName() + " ➤ 사번: " + member.getTrainee().getId()
+						+ " ➤ 이름: " + member.getTrainee().getName() + " ➤ 생년월일: " + member.getTrainee().getBirth()
+						+ " ➤ 성별: " + member.getTrainee().getSex());
+			}
+		} else {
+			List<Trainee> notDebutMembers = traineeDao.selectNoDebut();
+
+			for (Trainee trainee : notDebutMembers) {
+				System.out.println(" ➤ 사번: " + trainee.getId() + " ➤ 이름: " + trainee.getName() + " ➤ 생년월일: "
+						+ trainee.getBirth() + " ➤ 성별: " + trainee.getSex());
+			}
+		}
 	}
-	// 보류
 
 	public void addTrainee() {
 
