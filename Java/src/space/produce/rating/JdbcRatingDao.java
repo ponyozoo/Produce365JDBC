@@ -47,9 +47,9 @@ public class JdbcRatingDao implements RatingDao {
 				PreparedStatement pStatment = connection
 						.prepareStatement("UPDATE RATING SET GRADE = ? WHERE TRAINEE_ID = ? AND CATEGORY = ?")) {
 
-			pStatment.setString(1, rating.getGrade()); 
+			pStatment.setString(1, rating.getGrade());
 			pStatment.setInt(2, rating.getTrainee().getId());// TRAINEE_ID
-			pStatment.setString(3, rating.getCategory()); 
+			pStatment.setString(3, rating.getCategory());
 
 			int rows = pStatment.executeUpdate();
 
@@ -69,23 +69,28 @@ public class JdbcRatingDao implements RatingDao {
 
 		List<Rating> ratings = new ArrayList<>();
 
-		String sql1 = ("SELECT * FROM RATING WHERE CATEGORY = 'TOTAL'");
-
 		try (Connection connection = DataSource.getDataSource();
-				PreparedStatement pStatement = connection.prepareStatement(sql1)) {
+				PreparedStatement pStatement = connection
+						.prepareStatement("SELECT CATEGORY, TRAINEE_ID, GRADE, NAME, BIRTH, SEX "
+								+ "FROM RATING JOIN TRAINEE ON RATING.TRAINEE_ID = TRAINEE.ID "
+								+ "WHERE CATEGORY = 'TOTAL' AND GRADE = ?")) {
 			{
-
+				pStatement.setString(1, grade);
 				ResultSet rs = pStatement.executeQuery();
 
 				while (rs.next()) {
 					Rating rating = new Rating();
+					Trainee trainee = new Trainee(rs.getInt("TRAINEE_ID"));
+
+					trainee.setName(rs.getString("NAME"));
+					trainee.setBirth(rs.getDate("BIRTH"));
+					trainee.setSex(rs.getString("SEX"));
+					rating.setTrainee(trainee);
 					rating.setCategory(rs.getString("CATEGORY"));
-					rating.setTrainee(new Trainee(rs.getInt("TRAINEE_ID")));
 					rating.setGrade(rs.getString("GRADE"));
 
 					ratings.add(rating);
 				}
-
 			}
 
 		} catch (SQLException e) {
