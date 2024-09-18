@@ -3,7 +3,6 @@ package space.produce.menu;
 import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
-
 import space.produce.debutMember.DebutMember;
 import space.produce.debutMember.JDBCDebutMemberDao;
 import space.produce.rating.JdbcRatingDao;
@@ -24,19 +23,18 @@ public class TraineeMenu {
 	public void selectTrainneeMenu() {
 
 		while (true) {
-			System.out.println(
-					"""
+			System.out.println("""
 
-							__________________________________________________🕺💃_______________________________________________
+			__________________________________________________🕺💃_______________________________________________
 
-							                                              [ 연습생 관리 ]
+															[ 연습생 관리 ]
 
-							         1. 전체 조회   2. 성별 조회   3. 국적별 조회   4. 종합 등급별 조회   5. 데뷔조 여부에 따른 조회
-							____________________________________________________________________________________________________
+						1. 전체 조회   2. 성별 조회   3. 국적별 조회   4. 종합 등급별 조회   5. 데뷔조 여부에 따른 조회
+			____________________________________________________________________________________________________
 
-															""");
+			""");
+			
 			int selectMenu = scanner.takeInt(1, 5);
-
 			if (selectMenu == -1) {
 				System.out.println("🚨 올바른 값을 입력해주세요");
 				continue;
@@ -45,55 +43,56 @@ public class TraineeMenu {
 			System.out.println("");
 
 			switch (selectMenu) {
-			case 1: {
-				readTraineeAll();
-				break;
-			}
-			case 2: {
-				readTraineeBySex();
-				break;
-			}
-			case 3: {
-				readTraineeByNationality();
-				break;
-			}
-			case 4: {
-				readTraineeByTodalGrade();
-				break;
-			}
-			case 5: {
-				readTraineeByDebut();
-				break;
-			}
-			case 6: {
-				return;
-			}
-
+				case 1: {
+					readTraineeAll();
+					break;
+				}
+				case 2: {
+					readTraineeBySex();
+					break;
+				}
+				case 3: {
+					readTraineeByNationality();
+					break;
+				}
+				case 4: {
+					readTraineeByTodalGrade();
+					break;
+				}
+				case 5: {
+					readTraineeByDebut();
+					break;
+				}
+				case 6: {
+					return;
+				}
 			}
 		}
-
 	}
 
 	public void readTraineeAll() {
 
 		List<Trainee> trainees = traineeDao.selectAll();
 
-		System.out.println("사번 | 이름 | 성별 | 생일");
+		if (trainees.isEmpty()) {
+			System.out.println("📢 연습생이 없습니다");
+			return ;
+		}
 
 		for (int i = 0; i < trainees.size(); i++) {
 			Trainee trainee = trainees.get(i);
-			System.out.printf("%d | %s | %s | %s\n", trainee.getId(), trainee.getName(), trainee.getSex(),
-					trainee.getBirth());
+			System.out.println((i + 1) + ". " + trainee);
 		}
+
+		this.printSelectedTrainee(trainees);
 	}
 
 	public void readTraineeBySex() {
-
 		int sexChoice;
 		String sex;
 
 		while (true) {
-			System.out.println("성별을 선택하세요: 1. 남성 / 2. 여성 ");
+			System.out.print("✅ 확인할 연습생 성별을 선택해주세요\n1. 남성  2. 여성 : ");
 			sexChoice = scanner.takeInt(1, 2);
 
 			if (sexChoice == 1) {
@@ -103,56 +102,51 @@ public class TraineeMenu {
 				sex = "F";
 				break;
 			} else {
-				System.out.println("🚨 올바른 값을 입력해주세요");
+				System.out.println("🚨 올바른 값을 입력해주세요\n");
 			}
 		}
 
 		List<Trainee> trainees = traineeDao.selectBySex(sex);
 
 		if (trainees.isEmpty()) {
-			System.out.println("선택한 성별에 해당하는 연습생 없습니다.");
+			System.out.println("📢 해당 성별에 해당하는 연습생이 없습니다");
 		} else {
-			System.out.println("선택한 성별의 연습생: ");
-			for (Trainee trainee : trainees) {
-				System.out.println("ID: " + trainee.getId() + "/ " + "이름: " + trainee.getName() + "/ 생일: "
-						+ trainee.getBirth() + "/ " + "성별: " + trainee.getSex());
+			for (int i = 0; i < trainees.size(); i++) {
+				System.out.println((i + 1) + ". " + trainees.get(i));
 			}
+			this.printSelectedTrainee(trainees);
 		}
 	}
 
 	public void readTraineeByNationality() {
-
 		List<String> nationalities = traineeDao.selectDistinctNationality();
 
-		System.out.println("국적을 선택하세요:");
 		for (int i = 0; i < nationalities.size(); i++) {
-			System.out.println((i + 1) + "번: " + nationalities.get(i));
+			System.out.println((i + 1) + ". " + nationalities.get(i));
 		}
 
 		int nationalityChoice;
 		String nationality = null;
 
 		while (true) {
-
-			System.out.print("번호를 입력하세요: ");
+			System.out.print("국적 번호를 선택해주세요 : ");
 			nationalityChoice = scanner.takeInt(1, 3);
 			if (nationalityChoice != -1) {
 				nationality = nationalities.get(nationalityChoice - 1);
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
 		List<Trainee> trainees = traineeDao.selectByNationality(nationality);
 
 		if (trainees.isEmpty()) {
-			System.out.println("선택한 국적에 해당하는 연습생이 없습니다.");
+			System.out.println("📢 해당 국적에 해당하는 연습생이 없습니다.");
 		} else {
-			System.out.println("선택한 국적의 연습생:");
-			for (Trainee trainee : trainees) {
-				System.out.println("ID: " + trainee.getId() + " / 이름: " + trainee.getName() + " / 생일: "
-						+ trainee.getBirth() + " / 성별: " + trainee.getSex());
+			for (int i = 0; i < trainees.size(); i++) {
+				System.out.println((i + 1) + ". " + trainees.get(i));
 			}
+			this.printSelectedTrainee(trainees);
 		}
 	}
 
@@ -172,14 +166,12 @@ public class TraineeMenu {
 		List<Rating> totalGrade = ratingDao.selectByTotalGrade(grade);
 
 		if (totalGrade.isEmpty()) {
-			System.out.println("📢 해당 등급의 연습생이 없습니다");
+			System.out.println("📢 해당 등급에 해당하는 연습생이 없습니다");
 			return;
 		}
 
 		for (Rating rating : totalGrade) {
-			System.out.println("➤ 등급: " + rating.getGrade() + " ➤ 사번: " + rating.getTrainee().getId() + " ➤ 이름: "
-					+ rating.getTrainee().getName() + " ➤ 생년월일: " + rating.getTrainee().getBirth() + " ➤ 성별: "
-					+ rating.getTrainee().getSex());
+			System.out.println("➤ 등급: " + rating.getGrade() + " " + rating.getTrainee());
 		}
 	}
 
@@ -199,22 +191,18 @@ public class TraineeMenu {
 			List<DebutMember> debutMembers = debutMemberDao.selectAll();
 
 			for (DebutMember member : debutMembers) {
-				System.out.println("➤ 데뷔조명: " + member.getGroup().getName() + " ➤ 사번: " + member.getTrainee().getId()
-						+ " ➤ 이름: " + member.getTrainee().getName() + " ➤ 생년월일: " + member.getTrainee().getBirth()
-						+ " ➤ 성별: " + member.getTrainee().getSex());
+				System.out.println("➤ 데뷔조명: " + member.getGroup().getName() + " " + member.getTrainee());
 			}
 		} else {
 			List<Trainee> notDebutMembers = traineeDao.selectNoDebut();
 
 			for (Trainee trainee : notDebutMembers) {
-				System.out.println(" ➤ 사번: " + trainee.getId() + " ➤ 이름: " + trainee.getName() + " ➤ 생년월일: "
-						+ trainee.getBirth() + " ➤ 성별: " + trainee.getSex());
+				System.out.println(trainee);
 			}
 		}
 	}
 
 	public void addTrainee() {
-
 		System.out.println("이름을 입력하세요: ");
 		String name = scanner.takeStr();
 
@@ -268,110 +256,100 @@ public class TraineeMenu {
 	}
 
 	public void deleteTrainee() {
-
 		List<Trainee> trainees = traineeDao.selectAll();
 
 		for (int i = 0; i < trainees.size(); i++) {
-			System.out.println((i + 1) + "번: " + trainees.get(i));
-		}
-
-		System.out.print("삭제할 연습생을 입력하세요: ");
-		int id = scanner.takeInt(1, trainees.size());
-
-		for (int i1 = 0; i1 < trainees.size(); i1++) {
-			System.out.println("----------------");
-			System.out.println(trainees.get(i1).getId());
-
-			if (id != -1) {
-				if (traineeDao.deleteById(trainees.get(id - 1).getId()))
-					System.out.println("✔️ 삭제 완료");
-				else
-					System.out.println("❌ 삭제 실패");
-				break;
-			}
-			System.out.println("연습생을 찾을 수 없습니다.");
-		}
-	}
-
-	public void updateTrainee() {
-
-		List<Trainee> trainees = traineeDao.selectAll();
-
-		System.out.println("전체 연습생 목록");
-
-		for (int i = 0; i < trainees.size(); i++) {
-			System.out.println((i + 1) + "번: " + trainees.get(i));
+			System.out.println((i + 1) + ". " + trainees.get(i));
 		}
 
 		int id = 0;
+		while (true) { 
+			System.out.print("삭제할 연습생을 선택해주세요 : ");
+			id = scanner.takeInt(1, trainees.size());
+			if (id != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
 
+		if (traineeDao.deleteById(trainees.get(id - 1).getId()))
+			System.out.println("✔️ 삭제 완료");
+		else
+			System.out.println("❌ 삭제 실패");
+	}
+
+	public void updateTrainee() {
+		List<Trainee> trainees = traineeDao.selectAll();
+
+		for (int i = 0; i < trainees.size(); i++) {
+			System.out.println((i + 1) + ". " + trainees.get(i));
+		}
+
+		int id = 0;
 		while (true) {
-			System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생을 선택해 주세요");
+			System.out.println("수정할 연습생을 선택해주세요 : ");
 			id = scanner.takeInt(1, trainees.size());
 
 			if (id != -1) {
 				break;
 			}
-			System.out.println("🚨 올바른 값을 입력해주세요");
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
 		}
 
 		Trainee trainee = trainees.get(id - 1);
 
-		System.out.println("1. 이름  2. 키  3. 몸무게  4. 국적");
-		System.out.print("수정할 정보를 선택해 주세요: ");
-		int option = scanner.takeInt(1, 4);
+		int option = 0;
+		while (true) { 
+			System.out.print("✅ 수정할 정보를 선택해주세요\n1. 이름  2. 키  3. 몸무게  4. 국적 : ");
+
+			option = scanner.takeInt(1, 4);
+			if (option != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
 
 		switch (option) {
-		case 1:
-			System.out.print("수정할 이름을 입력하세요: ");
-			String newName = scanner.takeStr();
-			trainee.setName(newName);
-			break;
-		case 2:
-			System.out.print("수정할 키를 입력하세요: ");
-			int newHeight = scanner.takeInt(0, Integer.MAX_VALUE);
-			trainee.setHeight(newHeight);
-			break;
-		case 3:
-			System.out.print("수정할 몸무게를 입력하세요: ");
-			int newWeight = scanner.takeInt(0, Integer.MAX_VALUE);
-			trainee.setWeight(newWeight);
-			break;
-		case 4:
-			System.out.print("수정할 국적을 입력하세요: ");
-			String newNationality = scanner.takeStr();
-			trainee.setNationality(newNationality);
-			break;
-		default:
-			System.out.println("잘못된 입력입니다.");
-
-			return;
+			case 1:
+				System.out.print("수정할 이름을 입력하세요 : ");
+				String newName = scanner.takeStr();
+				trainee.setName(newName);
+				break;
+			case 2:
+				System.out.print("수정할 키를 입력하세요 : ");
+				int newHeight = scanner.takeInt(0, Integer.MAX_VALUE);
+				trainee.setHeight(newHeight);
+				break;
+			case 3:
+				System.out.print("수정할 몸무게를 입력하세요 : ");
+				int newWeight = scanner.takeInt(0, Integer.MAX_VALUE);
+				trainee.setWeight(newWeight);
+				break;
+			case 4:
+				System.out.print("수정할 국적을 입력하세요 : ");
+				String newNationality = scanner.takeStr();
+				trainee.setNationality(newNationality);
+				break;
 		}
 
 		boolean isUpdated = traineeDao.update(trainee);
 
-		if (isUpdated) {
-			System.out.println("✅ 수정 완료 되었습니다!");
-		} else {
-			System.out.println("🚨 수정에 실패했습니다.");
-		}
+		if (isUpdated)
+			System.out.println("✔️ 수정 완료");
+		else
+			System.out.println("❌ 수정 실패");
 
 	}
 
 	public void updateGrade() {
-
 		List<Trainee> trainees = traineeDao.selectAll();
 
-		System.out.println("전체 연습생 목록");
-
 		for (int i = 0; i < trainees.size(); i++) {
-			System.out.println((i + 1) + "번: " + trainees.get(i));
+			System.out.println((i + 1) + ". " + trainees.get(i));
 		}
 
 		int id1 = 0;
 
 		while (true) {
-			System.out.println("(☞ﾟヮﾟ)☞ 수정할 연습생을 선택해 주세요");
+			System.out.print("\n수정할 연습생을 선택해주세요 : ");
 			id1 = scanner.takeInt(1, trainees.size());
 
 			if (id1 != -1) {
@@ -381,38 +359,41 @@ public class TraineeMenu {
 		}
 
 		Trainee trainee = trainees.get(id1 - 1);
-
 		Rating rating = new Rating();
 
-		System.out.println("1. VOCAL  2. RAP  3. DANCE  4. TOTAL");
-		System.out.print("종목을 선택해 주세요: ");
-		int option = scanner.takeInt(1, 4);
-		;
-		scanner.takeStr();
+		int option = 0;
+		while (true) { 
+			System.out.print("✅ 수정할 분야를 선택해주세요\n1. VOCAL  2. RAP  3. DANCE  4. TOTAL");
+			option = scanner.takeInt(1, 4);
+			if (option != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
 
-		System.out.print("A부터 F사이의 등급 중 선택해 주세요: ");
-
-		String grade = scanner.takeStr();
+		String grade = "";
+		while (true) { 
+			System.out.print("등급을 입력해주세요 (A~F) : ");
+			grade = scanner.takeStr();
+			if (!grade.equals(""))
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요\n");
+		}
 
 		String subject = null;
 
 		switch (option) {
-		case 1:
-			subject = "VOCAL";
-			break;
-		case 2:
-			subject = "RAP";
-			break;
-		case 3:
-			subject = "DANCE";
-			break;
-		case 4:
-			subject = "TOTAL";
-			break;
-
-		default:
-			System.out.println("🚨 올바른 값을 입력해주세요");
-			return;
+			case 1:
+				subject = "VOCAL";
+				break;
+			case 2:
+				subject = "RAP";
+				break;
+			case 3:
+				subject = "DANCE";
+				break;
+			case 4:
+				subject = "TOTAL";
+				break;
 		}
 
 		rating.setCategory(subject);
@@ -421,10 +402,23 @@ public class TraineeMenu {
 
 		boolean isUpdated = ratingDao.update(rating);
 
-		if (isUpdated) {
-			System.out.println("" + subject + "를 " + grade + " 등급으로 업데이트 완료했습니다");
-		} else {
-			System.out.println("등급 업데이트에 실패했습니다.");
+		if (isUpdated)
+			System.out.println("✔️ 수정 완료");
+		else
+			System.out.println("❌ 수정 실패");
+	}
+
+	private void printSelectedTrainee(List<Trainee> trainees) {
+		int selectedNum = 0;
+		while (true) { 
+			System.out.print("\n상세정보를 확인할 연습생 번호를 선택해주세요 (넘어가려면 0 입력) : ");
+			selectedNum = scanner.takeInt(0, trainees.size());
+			if (selectedNum != -1)
+				break ;
+			System.out.println("🚨 올바른 값을 입력해주세요");			
 		}
+
+		if (selectedNum != 0)
+			System.out.println(trainees.get(selectedNum - 1).toStringAll());
 	}
 }

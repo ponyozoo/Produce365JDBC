@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-
 import space.produce.debut.Debut;
 import space.produce.debut.DebutDao;
 import space.produce.debut.JDBCDebutDao;
@@ -15,12 +14,14 @@ import space.produce.trainee.JdbcTraineeDao;
 import space.produce.trainee.Trainee;
 import space.produce.trainee.TraineeDao;
 import space.produce.util.MyScanner;
+import space.produce.util.Util;
 
 public class DebutMenu {
 	private DebutDao debutDao = new JDBCDebutDao();
 	private DebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
 	private TraineeDao traineeDao = new JdbcTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
+	private Util util = new Util();
 
 	public void selectDebutMenu() {
 
@@ -133,8 +134,7 @@ public class DebutMenu {
 		String grade;
 		while (true) {
 			System.out.print("종합 평가 등급을 입력해주세요 (A~F) : ");
-			grade = scanner.takeStr();
-			//등급 비교 메소드 만들기
+			grade = util.checkGrade(scanner.takeStr());
 			if (!grade.equals("")) {
 				break;
 			}
@@ -251,9 +251,8 @@ public class DebutMenu {
 			case 1: { 
 				String newGrade;
 				while (true) {
-					System.out.print("등급을 입력해주세요 (A~F): ");
-					//등급비교메소드만들기
-					newGrade = scanner.takeStr();
+					System.out.print("등급을 입력해주세요 (A~F) : ");
+					newGrade = util.checkGrade(scanner.takeStr());
 					if (!newGrade.equals("")) {
 						break;
 					}

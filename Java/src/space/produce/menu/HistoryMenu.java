@@ -3,7 +3,6 @@ package space.produce.menu;
 import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
-
 import space.produce.care.Care;
 import space.produce.care.CareDAO;
 import space.produce.care.JDBCCareDao;
@@ -50,6 +49,7 @@ public class HistoryMenu {
 			}
 			
 			System.out.println("");
+			
 			switch (selectMenu) {
 				case 1: 
 					readCareHistory();
@@ -91,6 +91,7 @@ public class HistoryMenu {
     		}
     		
     		System.out.println("");
+
     		switch (selectMenu) {
     		case 1:
     			readCareHistoryAll();
@@ -127,6 +128,7 @@ public class HistoryMenu {
         	}
         	
         	System.out.println("");
+			
         	switch (selectMenu) {
 	        	case 1:
 	        		readLessonHistoryAll();
