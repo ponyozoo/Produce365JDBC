@@ -10,11 +10,10 @@ import java.util.List;
 import space.produce.trainee.Trainee;
 import space.produce.util.DataSource;
 
-public class JdbcRatingDao implements RatingDao {
+public class JDBCRatingDao implements RatingDao {
 
 	@Override
 	public boolean insert(Rating rating) {
-
 		boolean result = false;
 
 		try (Connection connection = DataSource.getDataSource();
@@ -35,7 +34,7 @@ public class JdbcRatingDao implements RatingDao {
 			e.printStackTrace();
 		}
 
-		return false;
+		return result;
 	}
 
 	@Override
@@ -45,11 +44,16 @@ public class JdbcRatingDao implements RatingDao {
 
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatment = connection
-						.prepareStatement("UPDATE RATING SET GRADE = ? WHERE TRAINEE_ID = ? AND CATEGORY = ?")) {
+						.prepareStatement("MERGE INTO RATING USING DUAL ON (TRAINEE_ID = ? AND CATEGORY = ?)"
+								+ "WHEN MATCHED THEN UPDATE SET GRADE = ?"
+								+ "WHEN NOT MATCHED THEN INSERT VALUES (?, ?, ?)")) {
 
-			pStatment.setString(1, rating.getGrade());
-			pStatment.setInt(2, rating.getTrainee().getId());// TRAINEE_ID
-			pStatment.setString(3, rating.getCategory());
+			pStatment.setInt(1, rating.getTrainee().getId());
+			pStatment.setString(2, rating.getCategory());
+			pStatment.setString(3, rating.getGrade());
+			pStatment.setString(4, rating.getCategory());
+			pStatment.setInt(5, rating.getTrainee().getId());
+			pStatment.setString(6, rating.getGrade());
 
 			int rows = pStatment.executeUpdate();
 
@@ -106,7 +110,7 @@ public class JdbcRatingDao implements RatingDao {
 
 		List<Rating> ratings = new ArrayList<>();
 
-		String sql1 = ("SELECT * FROM RATING WHERE TRAINEE_ID = ?");
+		String sql1 = ("SELECT * FROM RATING WHERE TRAINEE_ID = ? ORDER BY CATEGORY");
 
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement = connection.prepareStatement(sql1)) {

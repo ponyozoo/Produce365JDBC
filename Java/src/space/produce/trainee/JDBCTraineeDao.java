@@ -9,7 +9,7 @@ import java.util.List;
 
 import space.produce.util.DataSource;
 
-public class JdbcTraineeDao implements TraineeDao {
+public class JDBCTraineeDao implements TraineeDao {
 
 	@Override
 	public boolean insert(Trainee trainee) {
@@ -98,7 +98,7 @@ public class JdbcTraineeDao implements TraineeDao {
 		List<Trainee> trainees = new ArrayList<Trainee>();
 
 		try (Connection connection = DataSource.getDataSource();
-				PreparedStatement pStatment = connection.prepareStatement("SELECT * FROM TRAINEE ORDER BY ID DESC");
+				PreparedStatement pStatment = connection.prepareStatement("SELECT * FROM TRAINEE ORDER BY ID");
 				ResultSet rs = pStatment.executeQuery()) {
 
 			while (rs.next()) {
@@ -112,6 +112,7 @@ public class JdbcTraineeDao implements TraineeDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
 		return trainees;
 	}
 
@@ -152,7 +153,7 @@ public class JdbcTraineeDao implements TraineeDao {
 		List<Trainee> trainees = new ArrayList<>();
 
 		try (Connection connection = DataSource.getDataSource();
-				PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM TRAINEE WHERE SEX = ?")) {
+				PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM TRAINEE WHERE SEX = ? ORDER BY ID")) {
 
 			pStatement.setString(1, sex);
 
@@ -187,7 +188,7 @@ public class JdbcTraineeDao implements TraineeDao {
 
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement = connection
-						.prepareStatement("SELECT * FROM TRAINEE WHERE NATIONALITY = ?")) {
+						.prepareStatement("SELECT * FROM TRAINEE WHERE NATIONALITY = ? ORDER BY ID")) {
 
 			pStatement.setString(1, nationality);
 

@@ -64,9 +64,9 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 		List<DebutMember> debutMembers = new ArrayList<DebutMember>();
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement = connection.prepareStatement(
-						"SELECT IDX, GROUP_ID, D.NAME AS GROUP_NAME, T.ID AS TRAINEE_ID, T.NAME AS TRAINEE_NAME, BIRTH, SEX "
+						"SELECT IDX, GROUP_ID, D.NAME AS GROUP_NAME, T.ID AS TRAINEE_ID, T.NAME AS TRAINEE_NAME, BIRTH, SEX, HEIGHT, WEIGHT, NATIONALITY, HIRE_DATE "
 								+ "FROM DEBUT_MEMBER M, DEBUT D, TRAINEE T "
-								+ "WHERE M.GROUP_ID = D.ID AND M.TRAINEE_ID = T.ID ORDER BY IDX");
+								+ "WHERE M.GROUP_ID = D.ID AND M.TRAINEE_ID = T.ID ORDER BY GROUP_NAME, TRAINEE_ID");
 				ResultSet rs = pStatement.executeQuery()) {
 
 			while (rs.next()) {
@@ -78,6 +78,10 @@ public class JDBCDebutMemberDao implements DebutMemberDao {
 				trainee.setName(rs.getString("TRAINEE_NAME"));
 				trainee.setBirth(rs.getDate("BIRTH"));
 				trainee.setSex(rs.getString("SEX"));
+				trainee.setHeight(rs.getInt("HEIGHT"));
+				trainee.setWeight(rs.getInt("WEIGHT"));
+				trainee.setNationality(rs.getString("NATIONALITY"));
+				trainee.setHireDate(rs.getDate("HIRE_DATE"));
 
 				debutMember.setGroup(debut);
 				debutMember.setTrainee(trainee);

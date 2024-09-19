@@ -51,29 +51,19 @@ public class LessonMenu {
     public void readLesson() {
     	List<Lesson> allLesson = dao.selectAll();
     	
+    	if (allLesson.isEmpty()) {
+    		System.out.println("📢 수업이 없습니다");
+    		return ;
+    	}
+    	
     	for (Lesson lesson : allLesson) {
     		System.out.println(lesson);
     	}
     }
 
     public void addLesson() {
-    	String category;
-    	while (true) {
-    		System.out.print("수업명을 입력해주세요 : ");
-    		category = scanner.takeStr();
-    		if (category != "")
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요\n");
-    	}
-    	
-    	String trainer;
-    	while (true) {
-    		System.out.print("선생님 이름을 입력해주세요 : ");
-    		trainer = scanner.takeStr();
-    		if (trainer != "")
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요\n");    		
-    	}
+    	String category = scanner.takeStrCycle("수업명을 입력해주세요 : ");
+    	String trainer = scanner.takeStrCycle("선생님 이름을 입력해주세요 : ");
     	
     	while (true) {
     		System.out.print("수업에 필요한 총 시간을 입력해주세요 : ");
@@ -97,22 +87,20 @@ public class LessonMenu {
     public void deleteLesson() {
     	List<Lesson> allLesson = dao.selectAll();
     	
+    	if (allLesson.isEmpty()) {
+    		System.out.println("📢 수업이 없습니다");
+    		return ;
+    	}
+    	
     	for (int i = 0; i < allLesson.size(); i++) {
     		System.out.println((i + 1) + ". " + allLesson.get(i));
     	}
     	
-    	while (true) {
-    		System.out.print("\n삭제할 수업을 선택해주세요 : ");
-    		int num = scanner.takeInt(1, allLesson.size());
-    		if (num != -1) {
-    			if (dao.deleteById(allLesson.get(num - 1).getId()))
-    				System.out.println("✔️ 삭제 완료");
-				else
-					System.out.println("❌ 삭제 실패");
-    			break ;
-			}
-    		System.out.println("🚨 올바른 값을 입력해주세요\n");
-    	}
+		int num = scanner.takeIntCycle("\n삭제할 수업을 선택해주세요 : ", 1, allLesson.size());
+		if (dao.deleteById(allLesson.get(num - 1).getId()))
+			System.out.println("✔️ 삭제 완료");
+		else
+			System.out.println("❌ 삭제 실패");
     }
     
 }

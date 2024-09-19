@@ -12,7 +12,7 @@ import space.produce.care.Care;
 import space.produce.trainee.Trainee;
 import space.produce.util.DataSource;
 
-public class JDBCCareHistoryDao implements CareHistoryDAO {
+public class JDBCCareHistoryDao implements CareHistoryDao {
 
 	@Override
 	public boolean insert(CareHistory careHistory) {

@@ -46,7 +46,7 @@ public class MainMenu {
 			
 			switch (selectedNum) {
 				case 1 :
-//					traineeMenu.selectTraineeMenu();
+					traineeMenu.selectTraineeMenu();
 					break ;
 				case 2 :
 					debutMenu.selectDebutMenu();

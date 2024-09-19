@@ -4,23 +4,24 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-
 import space.produce.debut.Debut;
 import space.produce.debut.DebutDao;
 import space.produce.debut.JDBCDebutDao;
 import space.produce.debutMember.DebutMember;
 import space.produce.debutMember.DebutMemberDao;
 import space.produce.debutMember.JDBCDebutMemberDao;
-import space.produce.trainee.JdbcTraineeDao;
+import space.produce.trainee.JDBCTraineeDao;
 import space.produce.trainee.Trainee;
 import space.produce.trainee.TraineeDao;
 import space.produce.util.MyScanner;
+import space.produce.util.Util;
 
 public class DebutMenu {
 	private DebutDao debutDao = new JDBCDebutDao();
 	private DebutMemberDao debutMemberDao = new JDBCDebutMemberDao();
-	private TraineeDao traineeDao = new JdbcTraineeDao();
+	private TraineeDao traineeDao = new JDBCTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
+	private Util util = new Util();
 
 	public void selectDebutMenu() {
 
@@ -69,28 +70,33 @@ public class DebutMenu {
 					return;
 				}
 			}
-		}
-		
+		}		
 	}
 
 	public void readDebut() {
 		List<Debut> debutList = debutDao.findAll();
+		
+    	if (debutList.isEmpty()) {
+    		System.out.println("📢 데뷔조가 없습니다");
+    		return ;
+    	}
 
 		for (int i = 0; i < debutList.size(); i++) {
 			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 		
-		int selectedNum = 0;
-		while (true) {
-			System.out.print("\n멤버를 확인할 데뷔조를 선택해주세요 : ");
-			selectedNum = scanner.takeInt(1, debutList.size());
-			if (selectedNum != -1) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
+		System.out.println("");
+		
+		int selectedNum = scanner.takeIntCycle("멤버를 확인할 데뷔조를 선택해주세요 (넘어가려면 0 입력) : ", 0, debutList.size());
+		if (selectedNum == 0)
+			return ;
 		
 		List<DebutMember> memberList = debutMemberDao.selectByGroup(debutList.get(selectedNum - 1).getId());
+		
+    	if (memberList.isEmpty()) {
+    		System.out.println("📢 해당 데뷔조에 속한 연습생이 없습니다");
+    		return ;
+    	}
 		
 		System.out.println("");
 		
@@ -100,41 +106,14 @@ public class DebutMenu {
 	}
 
 	public void addDebut() {
-		String name;
-		while (true) {
-			System.out.print("그룹명 입력을 입력해주세요 : ");
-			name = scanner.takeStr();
-			if (!name.equals("")) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
-
-		int memberCount = 0;
-		while (true) {
-			System.out.print("인원 수를 입력해주세요 : ");
-			memberCount = scanner.takeInt(1, Integer.MAX_VALUE);
-			if (memberCount != -1) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
-
-		String concept;
-		while (true) {
-			System.out.print("컨셉을 입력해주세요 : ");
-			concept = scanner.takeStr();
-			if (!concept.equals("")) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
-
+		String name = scanner.takeStrCycle("그룹명 입력을 입력해주세요 : ");
+		int memberCount = scanner.takeIntCycle("인원 수를 입력해주세요 : ", 1, Integer.MAX_VALUE);
+		String concept = scanner.takeStrCycle("컨셉을 입력해주세요 : ");
+		
 		String grade;
 		while (true) {
 			System.out.print("종합 평가 등급을 입력해주세요 (A~F) : ");
-			grade = scanner.takeStr();
-			//등급 비교 메소드 만들기
+			grade = util.checkGrade(scanner.takeStr());
 			if (!grade.equals("")) {
 				break;
 			}
@@ -163,47 +142,35 @@ public class DebutMenu {
 		debut.setDebutDate(debutDate);
 
 		if (debutDao.insert(debut) == true)
-			System.out.println("✔️ 추가 완료");
+			System.out.println("\n✔️ 추가 완료");
 		else
-			System.out.println("❌ 추가 실패");
+			System.out.println("\n❌ 추가 실패");
 	}
 
 	public void deleteDebut() {
 		List<Debut> debutList = debutDao.findAll();
 		
+    	if (debutList.isEmpty()) {
+    		System.out.println("📢 데뷔조가 없습니다");
+    		return ;
+    	}
+		
 		for (int i = 0; i < debutList.size(); i++) {
 			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		int pickIndex = 0;
-		while (true) {
-			System.out.print("\n삭제할 데뷔조를 선택해주세요 : ");
-			pickIndex = scanner.takeInt(1, debutList.size());
-			if (pickIndex != -1)
-				break;
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
-
+		int pickIndex = scanner.takeIntCycle("\n삭제할 데뷔조를 선택해주세요 : ", 1, debutList.size());
 		int pickId = debutList.get(pickIndex - 1).getId();
+		int pickDel = scanner.takeIntCycle("⚠️ 해당 팀을 정말로 삭제하시겠습니까?\n1.예  2.아니오 : ", 1, 2);
 
-		int pickDel = 0;
-		while (true) {
-			System.out.print("⚠️ 해당 팀을 정말로 삭제하시겠습니까?\n1.예  2.아니오 : ");
-			pickDel = scanner.takeInt(1, 2);
-
-			if (pickDel == 1) {
-				if (debutDao.deleteById(pickId))
-					System.out.println("✔️ 삭제 완료");
-				else
-					System.out.println("❌ 추가 실패");					
-				break;
-			} else if (pickDel == 2) {
-				System.out.println("📢 이전 메뉴로 돌아갑니다");
-				break ;
-			} else {
-				System.out.println("🚨 올바른 값을 입력해주세요\n");
-			}
-		}
+		if (pickDel == 1) {
+			if (debutDao.deleteById(pickId))
+				System.out.println("\n✔️ 삭제 완료");
+			else
+				System.out.println("\n❌ 추가 실패");					
+		} else if (pickDel == 2) {
+			System.out.println("\n📢 이전 메뉴로 돌아갑니다");
+		} 
 	}
 
 	public void updateDebut() {
@@ -231,19 +198,19 @@ public class DebutMenu {
 		System.out.println("");
 		
 		List<Debut> debutList = debutDao.findAll();
+		
+    	if (debutList.isEmpty()) {
+    		System.out.println("📢 데뷔조가 없습니다");
+    		return ;
+    	}
 
 		for (int i = 0; i < debutList.size(); i++) {
 			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		int pickIndex = 0;
-		while (true) {
-			System.out.print("\n수정할 데뷔조를 선택해주세요 : ");
-			pickIndex = scanner.takeInt(1, debutList.size());
-			if (pickIndex != -1)
-				break;
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
+		System.out.println("");
+		
+		int pickIndex = scanner.takeIntCycle("수정할 데뷔조를 선택해주세요 : ", 1, debutList.size());
 
 		Debut selectedTeam = debutList.get(pickIndex - 1);
 
@@ -251,9 +218,8 @@ public class DebutMenu {
 			case 1: { 
 				String newGrade;
 				while (true) {
-					System.out.print("등급을 입력해주세요 (A~F): ");
-					//등급비교메소드만들기
-					newGrade = scanner.takeStr();
+					System.out.print("등급을 입력해주세요 (A~F) : ");
+					newGrade = util.checkGrade(scanner.takeStr());
 					if (!newGrade.equals("")) {
 						break;
 					}
@@ -263,16 +229,16 @@ public class DebutMenu {
 				selectedTeam.setGrade(newGrade);
 				
 				if (debutDao.update(selectedTeam)) {
-					System.out.println("✔️ 수정 완료");
+					System.out.println("\n✔️ 수정 완료");
 				} else {
-					System.out.println("❌ 수정 실패");
+					System.out.println("\n❌ 수정 실패");
 				}
 				
 				break;
 			}
 			case 2: {
 				while (true) {
-					System.out.print("데뷔 예정일을 입력해주세요 : ");
+					System.out.print("데뷔 예정일을 입력해주세요 (오늘 이후의 날짜만 가능합니다) : ");
 					String newDateInput = scanner.takeStr();
 					Date newDebutDate = null;
 					
@@ -288,9 +254,9 @@ public class DebutMenu {
 				}
 				
 				if (debutDao.update(selectedTeam)) {
-					System.out.println("✔️ 수정 완료");
+					System.out.println("\n✔️ 수정 완료");
 				} else {
-					System.out.println("❌ 수정 실패");
+					System.out.println("\n❌ 수정 실패");
 				}
 				break;
 			}
@@ -322,98 +288,73 @@ public class DebutMenu {
 		System.out.println("");
 		
 		List<Debut> debutList = debutDao.findAll();
+		
+    	if (debutList.isEmpty()) {
+    		System.out.println("📢 데뷔조가 없습니다");
+    		return ;
+    	}
+    	
 		for (int i = 0; i < debutList.size(); i++) {
 			System.out.println((i + 1) + ". " + debutList.get(i));
 		}
 
-		int selectTeam = 0;
-		while (true) {
-			System.out.print("\n데뷔조를 선택해주세요 : ");
-			selectTeam = scanner.takeInt(1, debutList.size());
-			if (selectTeam != -1) {
-				break;
-			}
-			System.out.println("🚨 올바른 값을 입력해주세요\n");
-		}
+		int selectTeam = scanner.takeIntCycle("\n데뷔조를 선택해주세요 : ", 1, debutList.size());
 		Debut pickTeam = debutList.get(selectTeam - 1);
 
 		if (selectMenu == 1) {
 			System.out.println("");
 			
 			List<Trainee> traineeNoDebutList = traineeDao.selectNoDebut();
+			
+	    	if (traineeNoDebutList.isEmpty()) {
+	    		System.out.println("📢 데뷔조가 아닌 연습생이 없습니다");
+	    		return ;
+	    	}
+			
 			for (int i = 0; i < traineeNoDebutList.size(); i++) {
 				System.out.println((i + 1) + ". " + traineeNoDebutList.get(i));
 			}
 
-			System.out.print("\n데뷔조에 추가할 연습생을 선택해주세요 : ");
-
-			int pickTrIndex = 0;
-			while (true) {
-				pickTrIndex = scanner.takeInt(1, traineeNoDebutList.size());
-				if (pickTrIndex != -1) {
-					break;
-				}
-				System.out.println("🚨 올바른 값을 입력해주세요\n");
-			}
-			
+			int pickTrIndex = scanner.takeIntCycle("\n데뷔조에 추가할 연습생을 선택해주세요 : ", 1, traineeNoDebutList.size());
 			Trainee pickTrainee = traineeNoDebutList.get(pickTrIndex - 1);
 			DebutMember newDebutMember = new DebutMember();
 			newDebutMember.setGroup(pickTeam);
 			newDebutMember.setTrainee(pickTrainee);
 
-			int putDebut = 0;
-			while (true) {
-				System.out.print("\n⚠️ 해당 인물을 데뷔조에 넣으시겠습니까?\n1. 예   2. 아니오 : ");
-				putDebut = scanner.takeInt(1, 2);
-				if (putDebut != -1) {
-					break;
-				}
-				System.out.println("🚨 올바른 값을 입력해주세요\\n");
-			}
+			int putDebut = scanner.takeIntCycle("\n⚠️ 해당 인물을 데뷔조에 넣으시겠습니까?\n1. 예   2. 아니오 : ", 1, 2);
 			
 			if (putDebut == 1) {
 				if (debutMemberDao.insert(newDebutMember)) {
-					System.out.println("✔️ 수정 완료");
+					System.out.println("\n✔️ 수정 완료");
 				} else {
-					System.out.println("❌ 수정 실패");
+					System.out.println("\n❌ 수정 실패");
 				}
 			} else if (putDebut == 2) {
-				System.out.println("📢 이전 메뉴로 돌아갑니다");
+				System.out.println("\n📢 이전 메뉴로 돌아갑니다");
 				return ;
 			}
 		} else if (selectMenu == 2) {
 			System.out.println("");
 
 			List<DebutMember> debutMembers = debutMemberDao.selectByGroup(pickTeam.getId());
+			
+	    	if (debutMembers.isEmpty()) {
+	    		System.out.println("📢 해당 데뷔조에 속한 연습생이 없습니다");
+	    		return ;
+	    	}
+			
 			for (int i = 0; i < debutMembers.size(); i++) {
 				System.out.println((i + 1) + ". " + debutMembers.get(i).getTrainee());
 			}
 
-			int pickTrIndex = 0;
-			while (true) {
-				System.out.print("\n데뷔조에서 삭제할 연습생을 선택해주세요 : ");
-				pickTrIndex = scanner.takeInt(1, debutMembers.size());
-				if (selectTeam != -1) {
-					break;
-				}
-				System.out.println("🚨 올바른 값을 입력해주세요\n");
-			}
-
-			int outDebut = 0;
-			while (true) {
-				System.out.print("\n⚠️ 해당 인물을 정말 데뷔조에서 삭제하시겠습니까?\n1. 예   2. 아니오 : ");
-				outDebut = scanner.takeInt(1, 2);
-				if (outDebut != -1) {
-					break;
-				}
-				System.out.println("🚨 잘못된 입력입니다.\n");
-			}
+			int pickTrIndex = scanner.takeIntCycle("\n데뷔조에서 삭제할 연습생을 선택해주세요 : ", 1, debutMembers.size());
+			int outDebut = scanner.takeIntCycle("\n⚠️ 해당 인물을 정말 데뷔조에서 삭제하시겠습니까?\n1. 예   2. 아니오 : ", 1, 2);
 
 			if (outDebut == 1) {
 				if (debutMemberDao.deleteById(debutMembers.get(pickTrIndex - 1).getIdx())) {
-					System.out.println("✔️ 수정 완료");
+					System.out.println("\n✔️ 수정 완료");
 				} else {
-					System.out.println("❌ 수정 실패");
+					System.out.println("\n❌ 수정 실패");
 				} 
 			} else if (outDebut == 2) {
 				System.out.println("📢 이전 메뉴로 돌아갑니다");

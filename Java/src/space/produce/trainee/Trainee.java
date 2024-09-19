@@ -102,8 +102,11 @@ public class Trainee {
 
 	@Override
 	public String toString() {
-		return "Trainee [id=" + id + ", name=" + name + ", birth=" + birth + ", sex=" + sex + ", height=" + height
-				+ ", weight=" + weight + ", nationality=" + nationality + ", hireDate=" + hireDate + "]";
+		return "➤ 사번: " + id + " ➤ 이름: " + name + " ➤ 생년월일: " + birth + " ➤ 성별: " + sex;
 	}
 
+	public String toStringAll() {
+		return "➤ 사번: " + id + " ➤ 이름: " + name + " ➤ 생년월일: " + birth + " ➤ 성별: " + sex + 
+			" ➤ 키: " + height + " ➤ 몸무게: " + weight + " ➤ 국적: " + nationality + " ➤ 입사일: " + hireDate;
+	}
 }

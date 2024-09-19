@@ -11,7 +11,7 @@ import space.produce.lesson.Lesson;
 import space.produce.trainee.Trainee;
 import space.produce.util.DataSource;
 
-public class JDBCLessonHistoryDao implements LessonHistoryDAO {
+public class JDBCLessonHistoryDao implements LessonHistoryDao {
 
 	@Override
 	public boolean insert(LessonHistory lessonHistory) {
