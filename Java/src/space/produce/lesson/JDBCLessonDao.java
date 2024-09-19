@@ -9,7 +9,7 @@ import java.util.List;
 
 import space.produce.util.DataSource;
 
-public class JDBCLessonDao implements LessonDAO {
+public class JDBCLessonDao implements LessonDao {
 
 	@Override
 	public boolean insert(Lesson lesson) {
@@ -49,7 +49,7 @@ public class JDBCLessonDao implements LessonDAO {
 		List<Lesson> result = null;
 		
 		try (Connection conn = DataSource.getDataSource();
-				PreparedStatement pStatement = conn.prepareStatement("SELECT * FROM LESSON");
+				PreparedStatement pStatement = conn.prepareStatement("SELECT * FROM LESSON ORDER BY ID");
 				ResultSet queryResult = pStatement.executeQuery()) {
 			result = new ArrayList<Lesson>();
 			while (queryResult.next()) {

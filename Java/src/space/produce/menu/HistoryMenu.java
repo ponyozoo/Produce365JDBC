@@ -4,29 +4,29 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 import space.produce.care.Care;
-import space.produce.care.CareDAO;
+import space.produce.care.CareDao;
 import space.produce.care.JDBCCareDao;
 import space.produce.careHistory.CareHistory;
-import space.produce.careHistory.CareHistoryDAO;
+import space.produce.careHistory.CareHistoryDao;
 import space.produce.careHistory.JDBCCareHistoryDao;
 import space.produce.lesson.JDBCLessonDao;
 import space.produce.lesson.Lesson;
-import space.produce.lesson.LessonDAO;
+import space.produce.lesson.LessonDao;
 import space.produce.lessonHistory.JDBCLessonHistoryDao;
 import space.produce.lessonHistory.LessonHistory;
-import space.produce.lessonHistory.LessonHistoryDAO;
-import space.produce.trainee.JdbcTraineeDao;
+import space.produce.lessonHistory.LessonHistoryDao;
+import space.produce.trainee.JDBCTraineeDao;
 import space.produce.trainee.Trainee;
 import space.produce.trainee.TraineeDao;
 import space.produce.util.MyScanner;
 
 public class HistoryMenu {
 	
-	private CareHistoryDAO careHistoryDao = new JDBCCareHistoryDao();
-	private CareDAO careDao = new JDBCCareDao(); 
-	private LessonHistoryDAO lessonHistoryDao = new JDBCLessonHistoryDao();
-	private LessonDAO lessonDao = new JDBCLessonDao();
-	private TraineeDao traineeDao = new JdbcTraineeDao();
+	private CareHistoryDao careHistoryDao = new JDBCCareHistoryDao();
+	private CareDao careDao = new JDBCCareDao(); 
+	private LessonHistoryDao lessonHistoryDao = new JDBCLessonHistoryDao();
+	private LessonDao lessonDao = new JDBCLessonDao();
+	private TraineeDao traineeDao = new JDBCTraineeDao();
 	private MyScanner scanner = new MyScanner(new Scanner(System.in));
 	
 	public void selectHistoryMenu() {
@@ -66,9 +66,7 @@ public class HistoryMenu {
 				case 5: 
 					return;
 			}
-
 		}
-
 	}
 	
     public void readCareHistory() {
@@ -146,7 +144,12 @@ public class HistoryMenu {
     }
     
     public void readCareHistoryAll() {
-    	List<CareHistory> careHistories = careHistoryDao.selectAll(); 
+    	List<CareHistory> careHistories = careHistoryDao.selectAll();
+    	
+    	if (careHistories.isEmpty()) {
+    		System.out.println("📢 케어 기록이 없습니다");
+    		return ;
+    	}
    	 
     	for ( int i = 0; i < careHistories.size(); i++ ) {
     		System.out.println(careHistories.get(i));
@@ -154,24 +157,27 @@ public class HistoryMenu {
     }
     
     public void readCareHistoryByTrainee() {
-    	List<Trainee> trainees = traineeDao.selectAll(); 
+    	List<Trainee> trainees = traineeDao.selectAll();
+    	
+    	if (trainees.isEmpty()) {
+    		System.out.println("📢 연습생이 없습니다");
+    		return ;
+    	}
     	
     	for ( int i = 0; i < trainees.size(); i++ ) {
     		System.out.println((i+1) + ". " + trainees.get(i));
     	}
     	
-    	int traineeNum = 0; 
-    	while (true) {
-    		System.out.print("\n연습생을 선택해주세요 : ");
-    		traineeNum = scanner.takeInt(1, trainees.size());
-    		if (traineeNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
-    	
+    	int traineeNum = scanner.takeIntCycle("\n연습생을 선택해주세요 : ", 1, trainees.size());
+    
     	System.out.println("");
 
     	List<CareHistory> careHistories = careHistoryDao.selectByTraineeId(trainees.get(traineeNum - 1).getId());
+    	
+    	if (careHistories.isEmpty()) {
+    		System.out.println("📢 해당 연습생의 케어 기록이 없습니다");
+    		return ;
+    	}
     	
     	for (int i = 0; i < careHistories.size(); i++) {
     		System.out.println(careHistories.get(i));
@@ -179,24 +185,27 @@ public class HistoryMenu {
     }
     
     public void readCareHistoryByCategory() {
-    	List<Care> cares = careDao.selectAll(); 
+    	List<Care> cares = careDao.selectAll();
+    	
+    	if (cares.isEmpty()) {
+    		System.out.println("📢 케어 정보가 없습니다");
+    		return ;
+    	}
     	
     	for ( int i = 0; i < cares.size(); i++ ) {
     		System.out.println((i+1) + ". " + cares.get(i));
     	}
     	
-    	int careNum = 0; 
-    	while (true) {
-    		System.out.print("\n케어 항목을 선택해주세요 : ");
-    		careNum = scanner.takeInt(1, cares.size());
-    		if (careNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
+    	int careNum = scanner.takeIntCycle("\n케어 항목을 선택해주세요 : ", 1, cares.size());
 
     	System.out.println("");
     	
     	List<CareHistory> careHistories = careHistoryDao.selectByCareId(cares.get(careNum - 1).getId());
+    	
+    	if (careHistories.isEmpty()) {
+    		System.out.println("📢 해당 케어의 기록이 없습니다");
+    		return ;
+    	}
     	
     	for (int i = 0; i < careHistories.size(); i++) {
     		System.out.println(careHistories.get(i));
@@ -206,30 +215,38 @@ public class HistoryMenu {
     public void readLessonHistoryAll() {
     	List<LessonHistory> lessonHistories = lessonHistoryDao.selectAll();
     	
+    	if (lessonHistories.isEmpty()) {
+    		System.out.println("📢 수업 기록이 없습니다");
+    		return ;
+    	}
+    	
     	for (int i = 0; i < lessonHistories.size(); i++) {
     		System.out.println(lessonHistories.get(i));
     	}    	
     }
     
     public void readLessonHistoryByTrainee() {
-    	List<Trainee> trainees = traineeDao.selectAll(); 
+    	List<Trainee> trainees = traineeDao.selectAll();
+    	
+    	if (trainees.isEmpty()) {
+    		System.out.println("📢 연습생이 없습니다");
+    		return ;
+    	}
     	
     	for ( int i = 0; i < trainees.size(); i++ ) {
     		System.out.println((i+1) + ". " + trainees.get(i));
     	}
     	
-    	int traineeNum = 0; 
-    	while (true) {
-    		System.out.print("\n연습생을 선택해주세요 : ");
-    		traineeNum = scanner.takeInt(1, trainees.size());
-    		if (traineeNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
+    	int traineeNum = scanner.takeIntCycle("\n연습생을 선택해주세요 : ", 1, trainees.size());
     	
     	System.out.println("");
 
     	List<LessonHistory> lessonHistories = lessonHistoryDao.selectByTraineeId(trainees.get(traineeNum - 1).getId());
+    	
+    	if (lessonHistories.isEmpty()) {
+    		System.out.println("📢 해당 연습생의 수업 기록이 없습니다");
+    		return ;
+    	}
     	
     	for (int i = 0; i < lessonHistories.size(); i++) {
     		System.out.println(lessonHistories.get(i));
@@ -239,22 +256,25 @@ public class HistoryMenu {
     public void readLessonHistoryBySubject() {
     	List<Lesson> lessons = lessonDao.selectAll(); 
     	
+    	if (lessons.isEmpty()) {
+    		System.out.println("📢 수업이 없습니다");
+    		return ;
+    	}
+    	
     	for ( int i = 0; i < lessons.size(); i++ ) {
     		System.out.println((i+1) + ". " + lessons.get(i));
     	}
     	
-    	int lessonNum = 0; 
-    	while (true) {
-    		System.out.print("\n수업을 선택해주세요 : ");
-    		lessonNum = scanner.takeInt(1, lessons.size());
-    		if (lessonNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
+    	int lessonNum = scanner.takeIntCycle("\n수업을 선택해주세요 : ", 1, lessons.size());
 
     	System.out.println("");
     	
     	List<LessonHistory> lessonHistories = lessonHistoryDao.selectByLessonId(lessons.get(lessonNum - 1).getId());
+    	
+    	if (lessonHistories.isEmpty()) {
+    		System.out.println("📢 해당 수업의 기록이 없습니다");
+    		return ;
+    	}
     	
     	for (int i = 0; i < lessonHistories.size(); i++) {
     		System.out.println(lessonHistories.get(i));
@@ -268,16 +288,8 @@ public class HistoryMenu {
        		System.out.println((i+1) + ". " + cares.get(i));
        	}
     	
-    	int careNum = 0;
-    	
-    	while (true) {
-    		System.out.print("\n케어 종류를 선택해주세요 : ");
-    		careNum = scanner.takeInt(1, cares.size());
-    		if (careNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
-    	
+    	int careNum = scanner.takeIntCycle("\n케어 종류를 선택해주세요 : ", 1, cares.size());
+ 
     	System.out.println("");
     	    	
     	List<Trainee> trainees = traineeDao.selectAll(); 
@@ -286,14 +298,7 @@ public class HistoryMenu {
        		System.out.println((i+1) + ". " + trainees.get(i));
        	}
     	
-    	int traineeNum = 0; 
-    	while (true) {
-    		System.out.print("\n연습생을 선택해주세요 : ");
-    		traineeNum = scanner.takeInt(1, trainees.size());
-    		if (traineeNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
+    	int traineeNum = scanner.takeIntCycle("\n연습생을 선택해주세요 : ", 1, trainees.size());
     	    	
     	while (true) {
     		System.out.print("케어 받은 날짜를 입력해 주세요 (오늘이라면 엔터를 눌러주세요) : ");
@@ -320,29 +325,15 @@ public class HistoryMenu {
     		System.out.println((i + 1) + ". " + lessons.get(i));
     	}
     	
-    	int lessonNum = 0;
-    	while (true) {
-    		System.out.print("\n수업을 선택해주세요 : ");
-    		lessonNum = scanner.takeInt(1, lessons.size());
-    		if (lessonNum != -1)
-    			break ;
-    		System.out.println("🚨 올바른 값을 입력해주세요");
-    	}
-    	
+    	int lessonNum = scanner.takeIntCycle("\n수업을 선택해주세요 : ", 1, lessons.size());
+
     	System.out.println("");
 
     	for (int i = 0; i < trainees.size(); i++) {
     		System.out.println((i + 1) + ". " + trainees.get(i));
     	}
     	
-    	int traineeNum = 0;
-    	while (true) {
-    		System.out.print("\n연습생을 선택해주세요 : ");
-    		traineeNum = scanner.takeInt(1, trainees.size());
-    		if (traineeNum != -1)
-    			break ;
-			System.out.println("🚨 올바른 값을 입력해주세요");
-    	}    	
+    	int traineeNum = scanner.takeIntCycle("\n연습생을 선택해주세요 : ", 1, trainees.size());
     	
     	while (true) {
     		System.out.print("수업 진행 날짜를 입력해주세요 (오늘이라면 엔터를 눌러주세요) : ");

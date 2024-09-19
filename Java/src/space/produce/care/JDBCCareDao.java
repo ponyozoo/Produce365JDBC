@@ -10,7 +10,7 @@ import java.util.List;
 
 import space.produce.util.DataSource;
 
-public class JDBCCareDao implements CareDAO {
+public class JDBCCareDao implements CareDao {
 
 	@Override
 	public boolean insert(Care care) {

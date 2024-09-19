@@ -92,7 +92,7 @@ public class JDBCDebutDao implements DebutDao {
 		
 		try (Connection connection = DataSource.getDataSource();
 				PreparedStatement pStatement 
-				= connection.prepareStatement("SELECT * FROM DEBUT ORDER BY ID ASC");
+				= connection.prepareStatement("SELECT * FROM DEBUT ORDER BY ID");
 				ResultSet rs = pStatement.executeQuery()) {
 		
 			while(rs.next()) {
