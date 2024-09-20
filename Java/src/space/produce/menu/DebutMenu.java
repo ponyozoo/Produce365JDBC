@@ -161,7 +161,7 @@ public class DebutMenu {
 
 		int pickIndex = scanner.takeIntCycle("\n삭제할 데뷔조를 선택해주세요 : ", 1, debutList.size());
 		int pickId = debutList.get(pickIndex - 1).getId();
-		int pickDel = scanner.takeIntCycle("⚠️ 해당 팀을 정말로 삭제하시겠습니까?\n1.예  2.아니오 : ", 1, 2);
+		int pickDel = scanner.takeIntCycle("\n⚠️ 해당 팀을 정말로 삭제하시겠습니까?\n1.예  2.아니오 : ", 1, 2);
 
 		if (pickDel == 1) {
 			if (debutDao.deleteById(pickId))
