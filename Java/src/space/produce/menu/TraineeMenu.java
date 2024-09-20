@@ -400,10 +400,12 @@ public class TraineeMenu {
 
 		int option = scanner.takeIntCycle("\n✅ 수정할 분야를 선택해주세요\n1. VOCAL  2. RAP  3. DANCE  4. TOTAL : ", 1, 4);
 
+		System.out.println("");
+		
 		String grade = "";
 		while (true) { 
-			System.out.print("\n등급을 입력해주세요 (A~F) : ");
-			grade = scanner.takeStr();
+			System.out.print("등급을 입력해주세요 (A~F) : ");
+			grade = util.checkGrade(scanner.takeStr());
 			if (!grade.equals(""))
 				break ;
 			System.out.println("🚨 올바른 값을 입력해주세요\n");
